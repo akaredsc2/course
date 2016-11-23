@@ -2,7 +2,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>About</title>
+    <title>Contact</title>
+    <style>
+        textarea {
+            width: 200px;;
+            height: 50px;;
+            resize: none;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -18,6 +25,20 @@
     <a href="<c:url value="/contact.jsp"/>">Contact Manager</a>
     <a href="<c:url value="/about.jsp"/>">About</a>
 </header>
-Created by Vitaly Sharapov KM33
+<label>
+    Message History<br>
+    <textarea name="message_history" disabled>
+    [09:15 23-Nov-16] Manager: your GUI is garbage
+    </textarea>
+</label>
+<form method="post" action="message">
+    <label>
+        New message<br>
+        <textarea name="user_new_message">
+
+        </textarea><br>
+        <input type="submit" value="send">
+    </label>
+</form>
 </body>
 </html>

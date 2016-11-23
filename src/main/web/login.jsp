@@ -27,6 +27,7 @@
     <label hidden>
         <a href="<c:url value="/login.jsp"/>">Log in</a><br>
     </label>
+    <input type="hidden" name="command" value="login">
     <input type="submit">
 </form>
 </body>
