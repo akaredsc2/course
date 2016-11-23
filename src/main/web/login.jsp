@@ -7,16 +7,16 @@
 <body>
 <form method="post" action="login">
     <label>
-        Login: <input type="text" name="user_login" required><br>
+        Login: <input type="text" name="user_login" required pattern=".{6,}"><br>
     </label>
     <label>
-        Password: <input type="password" name="user_password" required><br>
+        Password: <input type="password" name="user_password" required pattern=".{6,}"><br>
     </label>
     <label hidden>
-        Repeat password: <input type="password" name="user_password_2"><br>
+        Repeat password: <input type="password" name="user_password_2" pattern=".{6,}"><br>
     </label>
     <label hidden>
-        Email: <input type="email" name="user_email"><br>
+        Email: <input type="email" name="user_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"><br>
     </label>
     <label>
         <a href="<c:url value="/restore.jsp"/>">Restore Password</a><br>
