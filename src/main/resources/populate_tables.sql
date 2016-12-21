@@ -35,16 +35,19 @@ INSERT INTO Bills(b_number, c_number_fk, b_amount, b_timestamp, b_is_paid)
   VALUES (1, 0, 1488, SYSTIMESTAMP, 1);
 
 INSERT INTO Artists(a_contract, a_is_active, a_name, 
-  a_email, a_genre, a_price_per_hour)
+  a_email, a_genre, a_price_per_day)
   VALUES (0, 1, 'Dandelion', 'not@a.spy', 'live music', 100);
 INSERT INTO Artists(a_contract, a_is_active, a_name, 
-  a_email, a_genre, a_price_per_hour)
+  a_email, a_genre, a_price_per_day)
   VALUES (1, 1, 'Thomdril Merrilin', 'jump_da@fuck.up', 'live music', 300);
+INSERT INTO Artists(a_contract, a_is_active, a_name, 
+  a_email, a_genre, a_price_per_day)
+  VALUES (3, 1, 'Seargent Hurtmann', 'jump_da@fuck.up', 'PT', 300);
 
-INSERT INTO Performances(c_number_fk, a_contract_fk, p_hours, p_is_confirmed)
-  VALUES (0, 0, 2, 0);
-INSERT INTO Performances(c_number_fk, a_contract_fk, p_hours, p_is_confirmed)
-  VALUES (0, 1, 2, 1);
+INSERT INTO Performances(c_number_fk, a_contract_fk, p_is_confirmed)
+  VALUES (0, 0, 0);
+INSERT INTO Performances(c_number_fk, a_contract_fk, p_is_confirmed)
+  VALUES (0, 1, 1);
 
 INSERT INTO Restaurants(r_contract, r_is_active, r_name, 
   r_email, r_address, r_price_per_day)
@@ -207,10 +210,31 @@ END UPDATEPERSONALPAGE;
 /
 
 create or replace 
+PROCEDURE SENDMESSAGE (
+  FROM_USER IN VARCHAR2,
+  TO_USER IN VARCHAR2,
+  MESSAGE_CONTENT IN VARCHAR2,
+  STATUS OUT VARCHAR2  
+) AS 
+BEGIN
+  IF FROM_USER <> TO_USER THEN
+    BEGIN
+      INSERT INTO Messages(m_from_fk, m_to_fk, m_timestamp, m_content)
+      VALUES (FROM_USER, TO_USER, SYSTIMESTAMP, MESSAGE_CONTENT);
+      STATUS := 'OK';
+      COMMIT;
+    END;
+  ELSE 
+    STATUS := 'Sending messages to won account is now allowed';
+  END IF;
+END SENDMESSAGE;
+/
+
+create or replace 
 PROCEDURE CHANGERESTAURANT (
   USER_NAME IN VARCHAR2, 
   REST_NUMBER IN INTEGER,
-  STATUS OUT VARCHAR2  
+  STATUS OUT VARCHAR2
 ) AS 
 restaurantExists INTEGER;
 restaurantsReserved INTEGER;
@@ -247,3 +271,44 @@ BEGIN
   
 END CHANGERESTAURANT;
 /
+
+create or replace 
+PROCEDURE CHANGEARTIST (
+  USER_NAME IN VARCHAR2, 
+  ARTIST_NUMBER IN INTEGER,
+  STATUS OUT VARCHAR2
+) AS 
+artistExists INTEGER;
+performancesCount INTEGER;
+ceremonyNumber INTEGER;
+BEGIN
+  SELECT COUNT(*) INTO artistExists FROM Artists WHERE a_contract = ARTIST_NUMBER;
+  
+  IF artistExists > 0 THEN 
+    BEGIN
+      SELECT COUNT(*) INTO performancesCount
+      FROM Users
+        INNER JOIN Ceremonies ON u_name_fk = u_name
+        INNER JOIN Performances ON c_number = c_number_fk
+        INNER JOIN Artists ON a_contract_fk = a_contract
+      WHERE u_name = USER_NAME AND a_contract = ARTIST_NUMBER;
+    
+      SELECT c_number INTO ceremonyNumber
+      FROM Users
+        INNER JOIN Ceremonies ON u_name_fk = u_name
+      WHERE u_name = USER_NAME;
+  
+      IF performancesCount = 0 THEN
+        INSERT INTO Performances(c_number_fk, a_contract_fk, p_is_confirmed)
+        VALUES (ceremonyNumber, ARTIST_NUMBER, 0);
+      END IF;
+      STATUS := 'OK';
+      COMMIT;
+    END;
+  ELSE  
+    STATUS := 'Specified artist was not found';
+  END IF;
+  
+END CHANGEARTIST;
+/
+
