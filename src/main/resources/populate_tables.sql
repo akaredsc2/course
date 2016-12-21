@@ -26,6 +26,8 @@ INSERT INTO Messages(m_from_fk, m_to_fk, m_timestamp, m_content)
   
 INSERT INTO Ceremonies(c_number, u_name_fk, c_date, manager_fk)
   VALUES (0, 'garreth', '19-DEC-16', 'rand');
+INSERT INTO Ceremonies(c_number, u_name_fk, c_date, manager_fk)
+  VALUES (1, 'Thelomen', '17-DEC-16', 'rand');
   
 INSERT INTO Bills(b_number, c_number_fk, b_amount, b_timestamp, b_is_paid)
   VALUES (0, 0, 1488, SYSTIMESTAMP, 0);
@@ -56,7 +58,7 @@ INSERT INTO Restaurants(r_contract, r_is_active, r_name,
 INSERT INTO Reservations(c_number_fk, r_contract_fk, r_is_confirmed)
   VALUES (0, 1, 0);
 INSERT INTO Reservations(c_number_fk, r_contract_fk, r_is_confirmed)
-  VALUES (0, 0, 1);
+  VALUES (1, 0, 1);
 
 --procedures
 CREATE OR REPLACE PROCEDURE REGISTERNEWUSER (
@@ -142,8 +144,7 @@ BEGIN
 END RESTOREPASSWORD;
 /
 
-create or replace 
-PROCEDURE UPDATEPERSONALPAGE (
+CREATE OR REPLACE PROCEDURE UPDATEPERSONALPAGE (
   USER_NAME IN VARCHAR2,
   USER_PASSWORD IN VARCHAR2,
   GROOM_NAME IN VARCHAR2,
@@ -203,4 +204,46 @@ BEGIN
     STATUS := 'Failed to apply changes. Incorrect current password';
   END IF;
 END UPDATEPERSONALPAGE;
+/
+
+create or replace 
+PROCEDURE CHANGERESTAURANT (
+  USER_NAME IN VARCHAR2, 
+  REST_NUMBER IN INTEGER,
+  STATUS OUT VARCHAR2  
+) AS 
+restaurantExists INTEGER;
+restaurantsReserved INTEGER;
+ceremonyNumber INTEGER;
+BEGIN
+  SELECT COUNT(*) INTO restaurantExists FROM Restaurants WHERE r_contract = REST_NUMBER;
+  
+  IF restaurantExists > 0 THEN 
+    BEGIN
+      SELECT COUNT(*) INTO restaurantsReserved
+      FROM Users
+        INNER JOIN Ceremonies ON u_name_fk = u_name
+        INNER JOIN Reservations ON c_number = c_number_fk
+        INNER JOIN Restaurants ON r_contract_fk = r_contract
+      WHERE u_name = USER_NAME;
+    
+      SELECT c_number INTO ceremonyNumber
+      FROM Users
+        INNER JOIN Ceremonies ON u_name_fk = u_name
+      WHERE u_name = USER_NAME;
+  
+      IF restaurantsReserved > 0 THEN
+        UPDATE Reservations SET r_contract_fk = REST_NUMBER, r_is_confirmed = 0 WHERE c_number_fk = ceremonyNumber;
+      ELSE
+        INSERT INTO Reservations(c_number_fk, r_contract_fk, r_is_confirmed)
+        VALUES (ceremonyNumber, REST_NUMBER, 0);
+      END IF;
+      STATUS := 'OK';
+      COMMIT;
+    END;
+  ELSE  
+    STATUS := 'Specified restaurant was not found';
+  END IF;
+  
+END CHANGERESTAURANT;
 /
