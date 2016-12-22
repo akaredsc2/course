@@ -1,17 +1,17 @@
-INSERT INTO users(u_name, u_password, u_email, u_is_active, u_is_manager, 
+INSERT INTO users(u_name, u_password, u_email, u_is_manager, 
   u_groom_name, u_groom_surname, u_groom_birthday, 
   u_bride_name, u_bride_surname, u_bride_birthday) 
-  VALUES ('rand', 'at', 'dragon@reborn.net', 1, 1, 
+  VALUES ('rand', 'at', 'dragon@reborn.net', 1, 
     NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO users(u_name, u_password, u_email, u_is_active, u_is_manager, 
+INSERT INTO users(u_name, u_password, u_email, u_is_manager, 
   u_groom_name, u_groom_surname, u_groom_birthday, 
   u_bride_name, u_bride_surname, u_bride_birthday) 
-  VALUES ('garreth', 'garreth', 'garreth@tanfer.kar', 1, 0, 
+  VALUES ('garreth', 'garreth', 'garreth@tanfer.kar', 0, 
     'unknown', 'garreth', '14-AUG-1988', 'tiny', 'teit', '20-APR-1990');
-INSERT INTO users(u_name, u_password, u_email, u_is_active, u_is_manager, 
+INSERT INTO users(u_name, u_password, u_email, u_is_manager, 
   u_groom_name, u_groom_surname, u_groom_birthday, 
   u_bride_name, u_bride_surname, u_bride_birthday) 
-  VALUES ('Thelomen', 'Toblakai', 'teblor@uryd.lp', 1, 0, 
+  VALUES ('Thelomen', 'Toblakai', 'teblor@uryd.lp', 0, 
     'Karsa', 'Orlong', '23-SEP-1936', 'Samar', ' Dev', '11-JUN-1986');
     
 INSERT INTO Messages(m_from_fk, m_to_fk, m_timestamp, m_content)
@@ -31,31 +31,29 @@ INSERT INTO Ceremonies(c_number, u_name_fk, c_date, manager_fk)
   
 INSERT INTO Bills(b_number, c_number_fk, b_amount, b_timestamp, b_is_paid)
   VALUES (0, 0, 1488, SYSTIMESTAMP, 0);
-INSERT INTO Bills(b_number, c_number_fk, b_amount, b_timestamp, b_is_paid)
-  VALUES (1, 0, 1488, SYSTIMESTAMP, 1);
 
-INSERT INTO Artists(a_contract, a_is_active, a_name, 
+INSERT INTO Artists(a_contract, a_name, 
   a_email, a_genre, a_price_per_day)
-  VALUES (0, 1, 'Dandelion', 'not@a.spy', 'live music', 100);
-INSERT INTO Artists(a_contract, a_is_active, a_name, 
+  VALUES (0, 'Dandelion', 'not@a.spy', 'live music', 100);
+INSERT INTO Artists(a_contract, a_name, 
   a_email, a_genre, a_price_per_day)
-  VALUES (1, 1, 'Thomdril Merrilin', 'jump_da@fuck.up', 'live music', 300);
-INSERT INTO Artists(a_contract, a_is_active, a_name, 
+  VALUES (1, 'Thomdril Merrilin', 'jump_da@fuck.up', 'live music', 300);
+INSERT INTO Artists(a_contract, a_name, 
   a_email, a_genre, a_price_per_day)
-  VALUES (3, 1, 'Seargent Hurtmann', 'jump_da@fuck.up', 'PT', 300);
+  VALUES (3, 'Seargent Hurtmann', 'jump_da@fuck.up', 'PT', 300);
 
 INSERT INTO Performances(c_number_fk, a_contract_fk, p_is_confirmed)
   VALUES (0, 0, 0);
 INSERT INTO Performances(c_number_fk, a_contract_fk, p_is_confirmed)
   VALUES (0, 1, 1);
 
-INSERT INTO Restaurants(r_contract, r_is_active, r_name, 
+INSERT INTO Restaurants(r_contract, r_name, 
   r_email, r_address, r_price_per_day)
-  VALUES (0, 1, 'Pig and Whistle', 'pig@whist.le', 
+  VALUES (0, 'Pig and Whistle', 'pig@whist.le', 
     'Old Town, Stormwind City', 2000);
-INSERT INTO Restaurants(r_contract, r_is_active, r_name, 
+INSERT INTO Restaurants(r_contract, r_name, 
   r_email, r_address, r_price_per_day)
-  VALUES (1, 1, 'Salty Sailor Tavern', 'salt@sail.or', 
+  VALUES (1, 'Salty Sailor Tavern', 'salt@sail.or', 
     'Booty Bay, Stranglethorn Vale', 1488);
 
 INSERT INTO Reservations(c_number_fk, r_contract_fk, r_is_confirmed)
@@ -68,7 +66,7 @@ CREATE OR REPLACE PROCEDURE REGISTERNEWUSER (
   USER_NAME IN VARCHAR2,
   USER_PASSWORD IN VARCHAR2,
   USER_EMAIL IN VARCHAR2, 
-  REGISTRATION_STATUS OUT VARCHAR2 
+  STATUS OUT VARCHAR2 
 ) AS 
   sameLoginCount INTEGER;
   sameEmailCount INTEGER;
@@ -79,20 +77,20 @@ BEGIN
       SELECT COUNT(*) INTO sameEmailCount FROM Users WHERE u_email = USER_EMAIL;
       IF sameEmailCount = 0 THEN
         BEGIN
-          INSERT INTO users(u_name, u_password, u_email, u_is_active, u_is_manager, 
+          INSERT INTO users(u_name, u_password, u_email, u_is_manager, 
             u_groom_name, u_groom_surname, u_groom_birthday, 
             u_bride_name, u_bride_surname, u_bride_birthday) 
-          VALUES (USER_NAME, USER_PASSWORD, USER_EMAIL, 1, 0, 
+          VALUES (USER_NAME, USER_PASSWORD, USER_EMAIL, 0, 
             NULL, NULL, NULL, NULL, NULL, NULL);
           COMMIT;
-          REGISTRATION_STATUS := 'OK';
+          STATUS := 'ok';
         END;
       ELSE
-        REGISTRATION_STATUS := 'Email already in use';
+        STATUS := 'Email already in use';
       END IF;
     END;
   ELSE
-    REGISTRATION_STATUS := 'Login already in use';
+    STATUS := 'Login already in use';
   END IF;
 END REGISTERNEWUSER;
 /
@@ -100,7 +98,7 @@ END REGISTERNEWUSER;
 CREATE OR REPLACE PROCEDURE AUTHORIZEUSER (
   USER_NAME IN VARCHAR2,
   USER_PASSWORD IN VARCHAR2,
-  AUTH_STATUS OUT VARCHAR2,
+  STATUS OUT VARCHAR2,
   IS_MANAGER OUT NUMBER
 ) AS 
   userMatchCount INTEGER;
@@ -109,18 +107,18 @@ BEGIN
   SELECT COUNT(*) INTO userMatchCount FROM Users WHERE u_name = USER_NAME AND u_password = USER_PASSWORD;
   IF userMatchCount > 0 THEN
     BEGIN
-      AUTH_STATUS := 'OK';
-      UPDATE Users SET u_is_active = 1 WHERE u_name = USER_NAME;
+      STATUS := 'ok';
       SELECT COUNT(*) INTO managerMatchCount FROM Users WHERE u_name = USER_NAME AND u_password = USER_PASSWORD AND u_is_manager <> 0;
       IF managerMatchCount > 0 THEN
         IS_MANAGER := 1;
       ELSE
         IS_MANAGER := 0;
       END IF;
+      status := 'ok';
       COMMIT;
     END;
   ELSE
-    AUTH_STATUS := 'Wrong login/password combination';
+    STATUS := 'Wrong login/password combination';
     IS_MANAGER := 0;
   END IF;
 END AUTHORIZEUSER;
@@ -137,7 +135,7 @@ BEGIN
   SELECT COUNT (*) INTO loginEmailPairCount FROM Users WHERE u_name = USER_NAME AND u_email = USER_EMAIL;
   IF loginEmailPairCount > 0 THEN
     BEGIN
-      STATUS := 'OK';
+      STATUS := 'ok';
       SELECT u_password INTO USER_PASSWORD FROM Users WHERE u_name = USER_NAME AND u_email = USER_EMAIL;
     END;
   ELSE
@@ -190,7 +188,7 @@ BEGIN
         UPDATE Users SET u_password = NEW_PASSWORD WHERE u_name = USER_NAME;
       END IF;
       
-      STATUS := 'OK';
+      STATUS := 'ok';
     
       IF NEW_EMAIL IS NOT NULL THEN
         BEGIN
@@ -198,7 +196,7 @@ BEGIN
           IF sameEmailCount = 0 THEN
             UPDATE Users SET u_email = NEW_EMAIL WHERE u_name = USER_NAME;
           END IF;
-          STATUS := 'OK. Failed to update email. Specified address is already occupied';
+          STATUS := 'Failed to update email. Specified address is already occupied';
         END;
       END IF;
       COMMIT;
@@ -221,7 +219,7 @@ BEGIN
     BEGIN
       INSERT INTO Messages(m_from_fk, m_to_fk, m_timestamp, m_content)
       VALUES (FROM_USER, TO_USER, SYSTIMESTAMP, MESSAGE_CONTENT);
-      STATUS := 'OK';
+      STATUS := 'ok';
       COMMIT;
     END;
   ELSE 
@@ -262,7 +260,7 @@ BEGIN
         INSERT INTO Reservations(c_number_fk, r_contract_fk, r_is_confirmed)
         VALUES (ceremonyNumber, REST_NUMBER, 0);
       END IF;
-      STATUS := 'OK';
+      STATUS := 'ok';
       COMMIT;
     END;
   ELSE  
@@ -302,7 +300,7 @@ BEGIN
         INSERT INTO Performances(c_number_fk, a_contract_fk, p_is_confirmed)
         VALUES (ceremonyNumber, ARTIST_NUMBER, 0);
       END IF;
-      STATUS := 'OK';
+      STATUS := 'ok';
       COMMIT;
     END;
   ELSE  
@@ -532,3 +530,113 @@ BEGIN
 END MANAGEARTIST;
 /
 
+create or replace 
+PROCEDURE UPDATEARTIST (
+  MANAGER_NAME IN VARCHAR2,
+  ARTIST_NAME IN VARCHAR2,
+  ARTIST_EMAIL IN VARCHAR2,
+  ARTIST_GENRE IN VARCHAR2,
+  ARTIST_PRICE_PER_day IN NUMBER,
+  STATUS OUT VARCHAR2  
+) AS 
+isManager integer;
+artistExists integer;
+newContract integer;
+BEGIN
+  select count(*) into isManager from users where u_name = manager_name and u_is_manager <> 0;
+  
+  if isManager > 0 then
+    begin
+      select count(*) into artistExists from artists where a_name = ARTIST_NAME;
+      
+      if artistExists <> 0 then
+        begin 
+          select a_contract into newContract from artists where a_name = artist_name;
+            update artists set a_email = artist_email, a_genre = artist_genre, a_price_per_day = ARTIST_PRICE_PER_day where a_contract = newContract;
+        end;
+      else
+        select max(a_contract) into newContract from artists;
+        newContract := newContract + 1;
+        insert into artists(a_contract, a_name, a_email, a_genre, a_price_per_day) 
+        values(newContract, ARTIST_NAME, ARTIST_EMAIL, ARTIST_GENRE, ARTIST_PRICE_PER_day);
+      end if;
+      status := 'ok';
+      commit;
+    end;
+  else
+    status :='not a manager';
+  end if;
+  
+END UPDATEARTIST;
+/
+
+create or replace 
+PROCEDURE UPDATErestaurants (
+  MANAGER_NAME IN VARCHAR2,
+  rest_NAME IN VARCHAR2,
+  rest_EMAIL IN VARCHAR2,
+  rest_address IN VARCHAR2,
+  rest_PRICE_PER_day IN NUMBER,
+  STATUS OUT VARCHAR2  
+) AS 
+isManager integer;
+restExists integer;
+newContract integer;
+BEGIN
+  select count(*) into isManager from users where u_name = manager_name and u_is_manager <> 0;
+  
+  if isManager > 0 then
+    begin
+      select count(*) into restExists from restaurants where r_name = rest_NAME;
+      
+      if restExists <> 0 then
+        begin 
+          select r_contract into newContract from restaurants where r_name = rest_name;
+            update restaurants set r_email = rest_email, r_address = rest_address, r_price_per_day = reST_PRICE_PER_day where r_contract = newContract;
+        end;
+      else
+        select max(r_contract) into newContract from restaurants;
+        newContract := newContract + 1;
+        insert into restaurants(r_contract, r_name, r_email, r_address, r_price_per_day) 
+        values(newContract, rest_NAME, rest_EMAIL, rest_address, rest_PRICE_PER_day);
+      end if;
+      status := 'ok';
+      commit;
+    end;
+  else
+    status :='not a manager';
+  end if;
+  
+END UPDATErestaurants;
+/
+
+create or replace 
+PROCEDURE UPDATEBILL (
+  USER_NAME IN VARCHAR2, 
+  MANAGER_NAME IN VARCHAR2,
+  DO_CONFIRM IN NUMBER,
+  STATUS OUT VARCHAR2  
+) AS 
+userExists integer;
+managerExists integer;
+ceremonyNumber integer;
+BEGIN
+  select count (*) into userExists from users where u_name = user_name and u_is_manager = 0;
+  select count (*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
+  
+  if userExists > 0 then
+    if managerExists > 0 then
+      begin
+        select c_number into ceremonyNumber from ceremonies where u_name_fk = user_name;
+        update bills set b_is_paid = do_confirm where c_number_fk = ceremonyNumber;
+        status := 'ok';
+        commit;
+      end;
+    else
+      status := 'manager not found';
+    end if;
+  else
+    status := 'user not found';
+  end if;
+END UPDATEBILL;
+/

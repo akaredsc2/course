@@ -12,7 +12,6 @@ DELETE FROM Bills;
 DELETE FROM Ceremonies;
 DELETE FROM Messages;
 DELETE FROM Users;
-
 /*
 DROP TABLE HistoryReservations;
 DROP TABLE HistoryRestaurants;

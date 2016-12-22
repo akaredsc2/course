@@ -3,7 +3,6 @@ CREATE TABLE USERS (
   u_name VARCHAR2(40) NOT NULL,
   u_password VARCHAR2(40) NOT NULL,
   u_email VARCHAR2(40) NOT NULL,
-  u_is_active NUMBER NOT NULL,
   u_is_manager NUMBER NOT NULL,
   u_groom_name VARCHAR2(40),
   u_groom_surname VARCHAR2(40),
@@ -37,7 +36,6 @@ CREATE TABLE Bills (
 
 CREATE TABLE Artists (
   a_contract INTEGER NOT NULL,
-  a_is_active NUMBER NOT NULL,
   a_name VARCHAR2(40) NOT NULL,
   a_email VARCHAR2(40) NOT NULL,
   a_genre VARCHAR2(40) NOT NULL,
@@ -52,7 +50,6 @@ CREATE TABLE Performances (
 
 CREATE TABLE Restaurants (
   r_contract INTEGER NOT NULL,
-  r_is_active NUMBER NOT NULL,
   r_name VARCHAR2(40) NOT NULL,
   r_email VARCHAR2(40) NOT NULL,
   r_address VARCHAR2(256) NOT NULL,
@@ -160,26 +157,26 @@ BEFORE INSERT OR DELETE OR UPDATE ON Users
 FOR EACH ROW 
 BEGIN
   IF INSERTING THEN
-      INSERT INTO HistoryUsers(u_name, u_password, u_email, u_is_active, u_is_manager, 
+      INSERT INTO HistoryUsers(u_name, u_password, u_email, u_is_manager, 
         u_groom_name, u_groom_surname, u_groom_birthday, 
         u_bride_name, u_bride_surname, u_bride_birthday, change_timestamp, change_type) 
-        VALUES (:NEW.u_name, :NEW.u_password, :NEW.u_email, :NEW.u_is_active, :NEW.u_is_manager, 
+        VALUES (:NEW.u_name, :NEW.u_password, :NEW.u_email, :NEW.u_is_manager, 
         :NEW.u_groom_name, :NEW.u_groom_surname, :NEW.u_groom_birthday, 
         :NEW.u_bride_name, :NEW.u_bride_surname, :NEW.u_bride_birthday, SYSTIMESTAMP, 'insert');
   END IF;
   IF UPDATING THEN
-      INSERT INTO HistoryUsers(u_name, u_password, u_email, u_is_active, u_is_manager, 
+      INSERT INTO HistoryUsers(u_name, u_password, u_email, u_is_manager, 
         u_groom_name, u_groom_surname, u_groom_birthday, 
         u_bride_name, u_bride_surname, u_bride_birthday, change_timestamp, change_type) 
-        VALUES (:OLD.u_name, :OLD.u_password, :OLD.u_email, :OLD.u_is_active, :OLD.u_is_manager, 
+        VALUES (:OLD.u_name, :OLD.u_password, :OLD.u_email, :OLD.u_is_manager, 
         :OLD.u_groom_name, :OLD.u_groom_surname, :OLD.u_groom_birthday, 
         :OLD.u_bride_name, :OLD.u_bride_surname, :OLD.u_bride_birthday, SYSTIMESTAMP, 'update');
   END IF;
   IF DELETING THEN
-      INSERT INTO HistoryUsers(u_name, u_password, u_email, u_is_active, u_is_manager, 
+      INSERT INTO HistoryUsers(u_name, u_password, u_email, u_is_manager, 
         u_groom_name, u_groom_surname, u_groom_birthday, 
         u_bride_name, u_bride_surname, u_bride_birthday, change_timestamp, change_type) 
-        VALUES (:OLD.u_name, :OLD.u_password, :OLD.u_email, :OLD.u_is_active, :OLD.u_is_manager, 
+        VALUES (:OLD.u_name, :OLD.u_password, :OLD.u_email, :OLD.u_is_manager, 
         :OLD.u_groom_name, :OLD.u_groom_surname, :OLD.u_groom_birthday, 
         :OLD.u_bride_name, :OLD.u_bride_surname, :OLD.u_bride_birthday, SYSTIMESTAMP, 'delete');
   END IF;
@@ -210,16 +207,16 @@ BEFORE INSERT OR DELETE OR UPDATE ON Artists
 FOR EACH ROW 
 BEGIN
   IF INSERTING THEN
-    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
-      VALUES (:NEW.a_contract, :NEW.a_is_active, :NEW.a_name, :NEW.a_email, :NEW.a_genre, :NEW.a_price_per_day, SYSTIMESTAMP, 'insert');
+    INSERT INTO HistoryArtists(a_contract, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
+      VALUES (:NEW.a_contract, :NEW.a_name, :NEW.a_email, :NEW.a_genre, :NEW.a_price_per_day, SYSTIMESTAMP, 'insert');
   END IF;
   IF UPDATING THEN
-    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
-      VALUES (:OLD.a_contract, :OLD.a_is_active, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_day, SYSTIMESTAMP, 'update');
+    INSERT INTO HistoryArtists(a_contract, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
+      VALUES (:OLD.a_contract, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_day, SYSTIMESTAMP, 'update');
   END IF;
   IF DELETING THEN
-    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
-      VALUES (:OLD.a_contract, :OLD.a_is_active, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_day, SYSTIMESTAMP, 'delete');
+    INSERT INTO HistoryArtists(a_contract, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
+      VALUES (:OLD.a_contract, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_day, SYSTIMESTAMP, 'delete');
   END IF;
 END;
 /
@@ -248,16 +245,16 @@ BEFORE INSERT OR DELETE OR UPDATE ON Restaurants
 FOR EACH ROW 
 BEGIN
   IF INSERTING THEN
-    INSERT INTO HistoryRestaurants(r_contract, r_is_active, r_name, r_email, r_address, r_price_per_day, change_timestamp, change_type)
-      VALUES (:NEW.r_contract, :NEW.r_is_active, :NEW.r_name, :NEW.r_email, :NEW.r_address, :NEW.r_price_per_day, SYSTIMESTAMP, 'insert');
+    INSERT INTO HistoryRestaurants(r_contract, r_name, r_email, r_address, r_price_per_day, change_timestamp, change_type)
+      VALUES (:NEW.r_contract, :NEW.r_name, :NEW.r_email, :NEW.r_address, :NEW.r_price_per_day, SYSTIMESTAMP, 'insert');
   END IF;
   IF UPDATING THEN
-    INSERT INTO HistoryRestaurants(r_contract, r_is_active, r_name, r_email, r_address, r_price_per_day, change_timestamp, change_type)
-      VALUES (:OLD.r_contract, :OLD.r_is_active, :OLD.r_name, :OLD.r_email, :OLD.r_address, :OLD.r_price_per_day, SYSTIMESTAMP, 'update');
+    INSERT INTO HistoryRestaurants(r_contract, r_name, r_email, r_address, r_price_per_day, change_timestamp, change_type)
+      VALUES (:OLD.r_contract, :OLD.r_name, :OLD.r_email, :OLD.r_address, :OLD.r_price_per_day, SYSTIMESTAMP, 'update');
   END IF;
   IF DELETING THEN
-    INSERT INTO HistoryRestaurants(r_contract, r_is_active, r_name, r_email, r_address, r_price_per_day, change_timestamp, change_type)
-      VALUES (:OLD.r_contract, :OLD.r_is_active, :OLD.r_name, :OLD.r_email, :OLD.r_address, :OLD.r_price_per_day, SYSTIMESTAMP, 'delete');
+    INSERT INTO HistoryRestaurants(r_contract, r_name, r_email, r_address, r_price_per_day, change_timestamp, change_type)
+      VALUES (:OLD.r_contract, :OLD.r_name, :OLD.r_email, :OLD.r_address, :OLD.r_price_per_day, SYSTIMESTAMP, 'delete');
   END IF;
 END;
 /
