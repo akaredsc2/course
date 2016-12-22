@@ -41,13 +41,12 @@ CREATE TABLE Artists (
   a_name VARCHAR2(40) NOT NULL,
   a_email VARCHAR2(40) NOT NULL,
   a_genre VARCHAR2(40) NOT NULL,
-  a_price_per_hour DECIMAL NOT NULL
+  a_price_per_day DECIMAL NOT NULL
 );
 
 CREATE TABLE Performances (
   c_number_fk INTEGER NOT NULL,
   a_contract_fk INTEGER NOT NULL,
-  p_hours INTEGER NOT NULL,
   p_is_confirmed NUMBER NOT NULL
 );
 
@@ -211,16 +210,16 @@ BEFORE INSERT OR DELETE OR UPDATE ON Artists
 FOR EACH ROW 
 BEGIN
   IF INSERTING THEN
-    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_hour, change_timestamp, change_type)
-      VALUES (:NEW.a_contract, :NEW.a_is_active, :NEW.a_name, :NEW.a_email, :NEW.a_genre, :NEW.a_price_per_hour, SYSTIMESTAMP, 'insert');
+    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
+      VALUES (:NEW.a_contract, :NEW.a_is_active, :NEW.a_name, :NEW.a_email, :NEW.a_genre, :NEW.a_price_per_day, SYSTIMESTAMP, 'insert');
   END IF;
   IF UPDATING THEN
-    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_hour, change_timestamp, change_type)
-      VALUES (:OLD.a_contract, :OLD.a_is_active, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_hour, SYSTIMESTAMP, 'update');
+    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
+      VALUES (:OLD.a_contract, :OLD.a_is_active, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_day, SYSTIMESTAMP, 'update');
   END IF;
   IF DELETING THEN
-    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_hour, change_timestamp, change_type)
-      VALUES (:OLD.a_contract, :OLD.a_is_active, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_hour, SYSTIMESTAMP, 'delete');
+    INSERT INTO HistoryArtists(a_contract, a_is_active, a_name, a_email, a_genre, a_price_per_day, change_timestamp, change_type)
+      VALUES (:OLD.a_contract, :OLD.a_is_active, :OLD.a_name, :OLD.a_email, :OLD.a_genre, :OLD.a_price_per_day, SYSTIMESTAMP, 'delete');
   END IF;
 END;
 /
@@ -230,16 +229,16 @@ BEFORE INSERT OR DELETE OR UPDATE ON Performances
 FOR EACH ROW 
 BEGIN
   IF INSERTING THEN
-    INSERT INTO HistoryPerformances(c_number_fk, a_contract_fk, p_hours, p_is_confirmed, change_timestamp, change_type)
-      VALUES (:NEW.c_number_fk, :NEW.a_contract_fk, :NEW.p_hours, :NEW.p_is_confirmed, SYSTIMESTAMP, 'insert');
+    INSERT INTO HistoryPerformances(c_number_fk, a_contract_fk, p_is_confirmed, change_timestamp, change_type)
+      VALUES (:NEW.c_number_fk, :NEW.a_contract_fk, :NEW.p_is_confirmed, SYSTIMESTAMP, 'insert');
   END IF;
   IF UPDATING THEN
-    INSERT INTO HistoryPerformances(c_number_fk, a_contract_fk, p_hours, p_is_confirmed, change_timestamp, change_type)
-      VALUES (:OLD.c_number_fk, :OLD.a_contract_fk, :OLD.p_hours, :OLD.p_is_confirmed, SYSTIMESTAMP, 'update');
+    INSERT INTO HistoryPerformances(c_number_fk, a_contract_fk, p_is_confirmed, change_timestamp, change_type)
+      VALUES (:OLD.c_number_fk, :OLD.a_contract_fk, :OLD.p_is_confirmed, SYSTIMESTAMP, 'update');
   END IF;
   IF DELETING THEN
-    INSERT INTO HistoryPerformances(c_number_fk, a_contract_fk, p_hours, p_is_confirmed, change_timestamp, change_type)
-      VALUES (:OLD.c_number_fk, :OLD.a_contract_fk, :OLD.p_hours, :OLD.p_is_confirmed, SYSTIMESTAMP, 'delete');
+    INSERT INTO HistoryPerformances(c_number_fk, a_contract_fk, p_is_confirmed, change_timestamp, change_type)
+      VALUES (:OLD.c_number_fk, :OLD.a_contract_fk, :OLD.p_is_confirmed, SYSTIMESTAMP, 'delete');
   END IF;
 END;
 /

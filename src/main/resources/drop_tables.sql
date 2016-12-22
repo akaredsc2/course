@@ -13,6 +13,7 @@ DELETE FROM Ceremonies;
 DELETE FROM Messages;
 DELETE FROM Users;
 
+/*
 DROP TABLE HistoryReservations;
 DROP TABLE HistoryRestaurants;
 DROP TABLE HistoryPerformances;
@@ -27,3 +28,4 @@ DROP TABLE Bills;
 DROP TABLE Ceremonies;
 DROP TABLE Messages;
 DROP TABLE Users;
+*/

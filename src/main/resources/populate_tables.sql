@@ -312,3 +312,223 @@ BEGIN
 END CHANGEARTIST;
 /
 
+CREATE OR REPLACE PROCEDURE CHANGEROLE (
+  USER_NAME IN VARCHAR2, 
+  MANAGER_NAME IN VARCHAR2, 
+  STATUS OUT VARCHAR2
+) AS 
+managerExists INTEGER;
+userExists INTEGER;
+userIsManager INTEGER;
+BEGIN
+  select count(*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
+  
+  if managerExists > 0 then
+    begin
+      select count(*) into userExists from users where u_name = user_name;
+      if userExists > 0 then
+        begin
+          select u_is_manager into userIsManager from users where u_name = user_name;
+        
+          if userIsManager <> 0 then
+            update users set u_is_manager = 0 where u_name = user_name;
+          else
+            update users set u_is_manager = 1 where u_name = user_name;
+          end if;
+          status := 'ok';
+          commit;
+        end;
+      else
+        status := 'no such user';
+      end if;
+    end;
+  else
+    status := 'manager privelegies not confirmed';
+  end if;
+END CHANGEROLE;
+/
+
+CREATE OR REPLACE PROCEDURE CHANGECEREMONYDATE (
+  USER_NAME IN VARCHAR2,
+  NEW_DATE IN DATE,
+  STATUS OUT VARCHAR2  
+) AS 
+userExists integer;
+ceremonyExists integer;
+maxCeremonyNumber integer;
+BEGIN
+  select count(*) into userExists from users where u_name = user_name;
+  
+  if userExists > 0 then
+    begin
+      select count(*) into ceremonyExists from ceremonies where u_name_fk = user_name;
+      
+      if ceremonyExists > 0 then
+        if new_date > sysdate then
+          update ceremonies set c_date = new_date where u_name_fk = user_name;
+          status := 'ok';
+        else
+          status := 'new date is in the past';
+        end if;
+      else
+        begin
+          select max(c_number) into maxCeremonyNumber from ceremonies;
+          maxCeremonyNumber := maxCeremonyNumber + 1;
+          
+          INSERT INTO Ceremonies(c_number, u_name_fk, c_date, manager_fk)
+          VALUES (maxCeremonyNumber, user_name, new_date, null);
+          status := 'ok';
+        end;
+      end if;
+      commit;
+    end;
+  else
+    status := 'user not found';
+  end if;
+END CHANGECEREMONYDATE;
+/
+
+create or replace 
+PROCEDURE MANAGECEREMONY (
+  USER_NAME IN VARCHAR2,
+  MANAGER_NAME IN VARCHAR2, 
+  STATUS OUT VARCHAR2  
+) AS 
+isManager INTEGER;
+isUser INTEGER;
+isUserOccupied INTEGER;
+BEGIN
+  select count(*) into isUser from users where u_name = user_name and u_is_manager = 0;
+  select count(*) into isManager from users where u_name = manager_name and u_is_manager <> 0;
+  
+  if isUser > 0 and isManager > 0 then
+    begin
+      select count(*) into isUserOccupied from ceremonies where u_name_fk = user_name and manager_fk is not null;
+      
+      if isUserOccupied = 0 then
+        begin
+          update ceremonies set manager_fk = manager_name where u_name_fk = user_name;
+          status := 'ok1';
+        end;
+      else
+        begin
+          update ceremonies set manager_fk = null where u_name_fk = user_name;
+          status := 'ok2';
+        end;
+      end if;
+      commit;
+    end;
+  else
+    status := 'user or manager is invalid';
+  end if;
+END MANAGECEREMONY;
+/
+
+CREATE OR REPLACE PROCEDURE MANAGERESTAURANT (
+  USER_NAME IN VARCHAR2,
+  MANAGER_NAME IN VARCHAR2,
+  REST_NUMBER IN NUMBER,
+  do_confirm in number,
+  STATUS OUT VARCHAR2  
+) AS 
+userExists integer;
+managerExists integer;
+restaurantExists integer;
+isManagerAssignedToUser integer;
+userCeremonyDate date;
+reservationsCount integer;
+BEGIN
+  select count(*) into userExists from users where u_name = user_name and u_is_manager = 0;
+  select count(*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
+  select count(*) into restaurantExists from restaurants where r_contract = rest_number;
+  select count(*) into isManagerAssignedToUser from ceremonies where u_name_fk = user_name and manager_fk = MANAGER_NAME;
+  
+  if userExists > 0 then 
+    if managerExists > 0 then
+      if restaurantExists > 0 then
+        if isManagerAssignedToUser > 0 then
+          begin
+            select count(*) into reservationsCount 
+            from ceremonies inner join reservations on c_number = c_number_fk 
+            where 
+              r_contract_fk = rest_number 
+              and c_date in (select c_date from ceremonies where u_name_fk = user_name);
+          
+            if reservationsCount = 1 then
+              begin
+                update reservations set r_is_confirmed = do_confirm where c_number_fk in (select c_number from ceremonies where u_name_fk = user_name) and r_contract_fk = rest_number;
+                status := 'ok';
+              end;
+            else 
+              status := 'restaurant is busy that day';
+            end if;
+          end;
+        else
+          status := 'manager is not assigned to user';
+        end if;
+      else
+        status := 'restaurant not found';
+      end if;
+    else
+      status := 'manager not found';
+    end if;
+  else
+    status := 'user not found';
+  end if;
+END MANAGERESTAURANT;
+/
+
+create or replace 
+PROCEDURE MANAGEARTIST (
+  USER_NAME IN VARCHAR2,
+  MANAGER_NAME IN VARCHAR2,
+  ARtist_NUMBER IN NUMBER,
+  do_confirm in number,
+  STATUS OUT VARCHAR2  
+) AS 
+userExists integer;
+managerExists integer;
+artistExists integer;
+isManagerAssignedToUser integer;
+performancesCount integer;
+BEGIN
+  select count(*) into userExists from users where u_name = user_name and u_is_manager = 0;
+  select count(*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
+  select count(*) into artistExists from artists where a_contract = artist_number;
+  select count(*) into isManagerAssignedToUser from ceremonies where u_name_fk = user_name and manager_fk = MANAGER_NAME;
+  
+  if userExists > 0 then 
+    if managerExists > 0 then
+      if artistExists > 0 then
+        if isManagerAssignedToUser > 0 then
+          begin
+            select count(*) into performancesCount 
+            from ceremonies inner join performances on c_number = c_number_fk 
+            where 
+              a_contract_fk = artist_number 
+              and c_date in (select c_date from ceremonies where u_name_fk = user_name);
+          
+            if performancesCount = 1 then
+              begin
+                update performances set p_is_confirmed = do_confirm where c_number_fk in (select c_number from ceremonies where u_name_fk = user_name) and a_contract_fk = artist_number;
+                status := 'ok';
+              end;
+            else 
+              status := 'artist is busy that day';
+            end if;
+          end;
+        else
+          status := 'manager is not assigned to user';
+        end if;
+      else
+        status := 'artist not found';
+      end if;
+    else
+      status := 'manager not found';
+    end if;
+  else
+    status := 'user not found';
+  end if;
+END MANAGEARTIST;
+/
+
