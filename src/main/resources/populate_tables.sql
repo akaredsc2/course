@@ -71,6 +71,7 @@ CREATE OR REPLACE PROCEDURE REGISTERNEWUSER (
   sameLoginCount INTEGER;
   sameEmailCount INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   SELECT COUNT(*) INTO sameLoginCount FROM Users WHERE u_name = USER_NAME;
   IF sameLoginCount = 0 THEN
     BEGIN
@@ -104,6 +105,7 @@ CREATE OR REPLACE PROCEDURE AUTHORIZEUSER (
   userMatchCount INTEGER;
   managerMatchCount INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
   SELECT COUNT(*) INTO userMatchCount FROM Users WHERE u_name = USER_NAME AND u_password = USER_PASSWORD;
   IF userMatchCount > 0 THEN
     BEGIN
@@ -132,6 +134,7 @@ CREATE OR REPLACE PROCEDURE RESTOREPASSWORD (
 ) AS
 loginEmailPairCount INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
   SELECT COUNT (*) INTO loginEmailPairCount FROM Users WHERE u_name = USER_NAME AND u_email = USER_EMAIL;
   IF loginEmailPairCount > 0 THEN
     BEGIN
@@ -161,6 +164,7 @@ CREATE OR REPLACE PROCEDURE UPDATEPERSONALPAGE (
 correctUserCount INTEGER;
 sameEmailCount INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   SELECT COUNT(*) INTO correctUserCount FROM Users WHERE u_name = USER_NAME AND u_password = USER_PASSWORD;
   IF correctUserCount <> 0 THEN
     BEGIN
@@ -215,6 +219,7 @@ PROCEDURE SENDMESSAGE (
   STATUS OUT VARCHAR2  
 ) AS 
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   IF FROM_USER <> TO_USER THEN
     BEGIN
       INSERT INTO Messages(m_from_fk, m_to_fk, m_timestamp, m_content)
@@ -238,6 +243,7 @@ restaurantExists INTEGER;
 restaurantsReserved INTEGER;
 ceremonyNumber INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   SELECT COUNT(*) INTO restaurantExists FROM Restaurants WHERE r_contract = REST_NUMBER;
   
   IF restaurantExists > 0 THEN 
@@ -280,6 +286,7 @@ artistExists INTEGER;
 performancesCount INTEGER;
 ceremonyNumber INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   SELECT COUNT(*) INTO artistExists FROM Artists WHERE a_contract = ARTIST_NUMBER;
   
   IF artistExists > 0 THEN 
@@ -319,6 +326,7 @@ managerExists INTEGER;
 userExists INTEGER;
 userIsManager INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
   
   if managerExists > 0 then
@@ -355,6 +363,7 @@ userExists integer;
 ceremonyExists integer;
 maxCeremonyNumber integer;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into userExists from users where u_name = user_name;
   
   if userExists > 0 then
@@ -396,6 +405,7 @@ isManager INTEGER;
 isUser INTEGER;
 isUserOccupied INTEGER;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into isUser from users where u_name = user_name and u_is_manager = 0;
   select count(*) into isManager from users where u_name = manager_name and u_is_manager <> 0;
   
@@ -436,6 +446,7 @@ isManagerAssignedToUser integer;
 userCeremonyDate date;
 reservationsCount integer;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into userExists from users where u_name = user_name and u_is_manager = 0;
   select count(*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
   select count(*) into restaurantExists from restaurants where r_contract = rest_number;
@@ -490,6 +501,7 @@ artistExists integer;
 isManagerAssignedToUser integer;
 performancesCount integer;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into userExists from users where u_name = user_name and u_is_manager = 0;
   select count(*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
   select count(*) into artistExists from artists where a_contract = artist_number;
@@ -543,6 +555,7 @@ isManager integer;
 artistExists integer;
 newContract integer;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into isManager from users where u_name = manager_name and u_is_manager <> 0;
   
   if isManager > 0 then
@@ -583,6 +596,7 @@ isManager integer;
 restExists integer;
 newContract integer;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into isManager from users where u_name = manager_name and u_is_manager <> 0;
   
   if isManager > 0 then
@@ -621,6 +635,7 @@ userExists integer;
 managerExists integer;
 ceremonyNumber integer;
 BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
   select count (*) into userExists from users where u_name = user_name and u_is_manager = 0;
   select count (*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
   
@@ -640,3 +655,61 @@ BEGIN
   end if;
 END UPDATEBILL;
 /
+
+create view personalInfo as(
+  select 
+    u_name, u_email, 
+    u_groom_name, u_groom_surname, u_groom_birthday, 
+    u_bride_name, u_bride_surname, u_bride_birthday
+  from
+    users
+);
+/
+
+create view ceremonystate as(
+  select 
+    u_groom_name, u_groom_surname, u_bride_name, u_bride_surname,
+    c_date,
+    r_name, r_address, r_is_confirmed
+  from
+    users inner join ceremonies on u_name = u_name_fk
+    inner join reservations on c_number = c_number_fk
+    inner join restaurants on r_contract = r_contract_fk
+    
+  union
+  
+  select 
+    u_groom_name, u_groom_surname, u_bride_name, u_bride_surname,
+    c_date,
+    a_name, a_genre, p_is_confirmed
+  from
+    users inner join ceremonies on u_name = u_name_fk
+    inner join performances on c_number = c_number_fk
+    inner join artists on a_contract = a_contract_fk
+);
+/
+
+create view paymentBills as (
+  select 
+    u_name_fk, b_amount, b_timestamp, b_is_paid
+  from 
+    ceremonies inner join bills on c_number = c_number_fk
+);
+/
+
+create view userStatus as (
+  select 
+    u_name, u_email, u_is_manager
+  from 
+    users
+);
+/
+
+create view managerAssignments as (
+  select
+    u_name, manager_fk
+  from 
+    users right outer join ceremonies on u_name = u_name_fk
+);
+/
+
