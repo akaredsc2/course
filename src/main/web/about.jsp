@@ -14,7 +14,9 @@
         </form>
         <br/>
     </c:if>
-    <a href="<c:url value="/ceremony.jsp"/>">Manage Ceremony</a>
+    <form method="post" action="ceremony_switch">
+        <input type="submit" value="manage ceremony">
+    </form>
     <a href="<c:url value="/contact.jsp"/>">Contact Manager</a>
     <a href="<c:url value="/about.jsp"/>">About</a>
     <form method="post" action="personal_page">

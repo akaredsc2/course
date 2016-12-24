@@ -651,20 +651,24 @@ create view personalInfo as(
 );
 /
 
-create view ceremonystate as(
+create view ceremonyrestaurant as(
   select 
-    u_groom_name, u_groom_surname, u_bride_name, u_bride_surname,
+    u_name,
+    u_groom_name, u_groom_surname, u_groom_birthday,
+    u_bride_name, u_bride_surname, u_bride_birthday,
     c_date,
     r_name, r_address, r_is_confirmed
   from
     users inner join ceremonies on u_name = u_name_fk
     inner join reservations on c_number = c_number_fk
     inner join restaurants on r_contract = r_contract_fk
-    
-  union
+);
   
+create view ceremonyartists as(
   select 
-    u_groom_name, u_groom_surname, u_bride_name, u_bride_surname,
+    u_name,
+    u_groom_name, u_groom_surname, u_groom_birthday,
+    u_bride_name, u_bride_surname, u_bride_birthday,
     c_date,
     a_name, a_genre, p_is_confirmed
   from
@@ -695,6 +699,29 @@ create view managerAssignments as (
     u_name, manager_fk
   from 
     users right outer join ceremonies on u_name = u_name_fk
+);
+/
+
+create view ceremonyDates as (
+  select
+    u_name, c_date
+  from 
+    users inner join ceremonies on u_name = u_name_fk
+);
+
+create or replace view viewrestaurants as (
+  select
+    r_contract, r_name, r_address, r_price_per_day
+  from 
+    restaurants
+);
+/
+
+create or replace view viewartists as (
+  select
+    a_contract, a_name, a_genre, a_price_per_day
+  from 
+    artists
 );
 /
 
