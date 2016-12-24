@@ -357,7 +357,7 @@ BEGIN
       
       if ceremonyExists > 0 then
         if new_date > sysdate then
-          update ceremonies set c_date = to_date(new_date, 'yyyy-mm-dd') where u_name_fk = user_name;
+          update ceremonies set c_date = new_date where u_name_fk = user_name;
           status := 'ok';
         else
           status := 'new date is in the past';
@@ -368,7 +368,7 @@ BEGIN
           maxCeremonyNumber := maxCeremonyNumber + 1;
           
           INSERT INTO Ceremonies(c_number, u_name_fk, c_date, manager_fk)
-          VALUES (maxCeremonyNumber, user_name, to_date(new_date, 'yyyy-mm-dd'), null);
+          VALUES (maxCeremonyNumber, user_name, new_date, null);
           status := 'ok';
         end;
       end if;

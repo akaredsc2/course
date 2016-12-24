@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static ua.kpi.course.util.ConnectionProperties.*;
 
@@ -23,15 +25,15 @@ public class CeremonyInfoServlet extends HttpServlet {
         try {
             Class.forName(DRIVER);
 
-            try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD)) {
-                PreparedStatement statement = connection.prepareStatement(
-                        "SELECT u_name,\n" +
-                                "    u_groom_name, u_groom_surname, u_groom_birthday,\n" +
-                                "    u_bride_name, u_bride_surname, u_bride_birthday,\n" +
-                                "    c_date,\n" +
-                                "    r_name, r_address, r_is_confirmed " +
-                                "FROM ceremonyrestaurant " +
-                                "WHERE u_name = '" + userLogin + "'");
+            try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+                 PreparedStatement statement = connection.prepareStatement(
+                         "SELECT u_name,\n" +
+                                 "    u_groom_name, u_groom_surname, u_groom_birthday,\n" +
+                                 "    u_bride_name, u_bride_surname, u_bride_birthday,\n" +
+                                 "    c_date,\n" +
+                                 "    r_name, r_address, r_is_confirmed " +
+                                 "FROM ceremonyrestaurant " +
+                                 "WHERE u_name = '" + userLogin + "'")) {
                 statement.executeQuery();
 
                 ResultSet set = statement.getResultSet();
@@ -50,6 +52,8 @@ public class CeremonyInfoServlet extends HttpServlet {
                     String restaurantInfo = set.getString(9) + ", " + set.getString(10) + "," + confirmationStatus;
                     req.setAttribute("cer_rest", restaurantInfo);
 
+                    loadCeremonyArtists(req, userLogin);
+
                     UtilDao.retrieveRestaurants(req, connection);
                     UtilDao.retrieveArtists(req, connection);
 
@@ -60,11 +64,35 @@ public class CeremonyInfoServlet extends HttpServlet {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
         }
     }
 
+    private void loadCeremonyArtists(HttpServletRequest req, String userLogin) throws ServletException, IOException {
+        try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT a_name, a_genre, p_is_confirmed  FROM ceremonyartists WHERE u_name = '" + userLogin + "'")) {
+            statement.executeQuery();
+
+            ResultSet set = statement.getResultSet();
+
+            List<String> artistList = new ArrayList<>();
+            while (set.next()) {
+                String artistConfirmationStatus = set.getInt(3) > 0 ? "confirmed" : "not confirmed";
+                String artistInfo = set.getString(1) + ", " + set.getString(2) + "," + artistConfirmationStatus;
+                artistList.add(artistInfo);
+            }
+
+            System.out.println(artistList);
+
+            req.setAttribute("cer_art", artistList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

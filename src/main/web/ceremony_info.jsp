@@ -48,6 +48,22 @@
             <br>
         </label>
     </form>
+    <form method="post" action="update_ceremony">
+        <label>
+            Artists : <br>
+            <c:forEach items="${requestScope.cer_art}" var="item">
+                ${item}<br>
+            </c:forEach>
+            Other artists :
+            <select name="art_number" required>
+                <c:forEach items="${requestScope.artMap}" var="entry">
+                    <option value="${entry.key}">${entry.value}</option>
+                </c:forEach>
+            </select>
+            <input type="hidden" name="command" value="add artist">
+            <input type="submit" value="add artist">
+        </label>
+    </form>
 </c:if>
 </body>
 </html>

@@ -23,7 +23,7 @@ public class CeremonyUpdateServlet extends HttpServlet {
                 doEditRestaurant(req, resp, userLogin);
                 break;
             case "add artist":
-
+                doAddArtist(req, resp, userLogin);
                 break;
             case "edit date":
                 doEditCeremonyDate(req, resp, userLogin);
@@ -31,6 +31,30 @@ public class CeremonyUpdateServlet extends HttpServlet {
             default:
                 getServletContext().getRequestDispatcher("/error.jsp");
                 break;
+        }
+    }
+
+    private void doAddArtist(HttpServletRequest req, HttpServletResponse resp, String userLogin) throws ServletException, IOException {
+        try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+             CallableStatement statement = connection.prepareCall("{CALL CHANGEARTIST(?,?,?)}")) {
+            statement.setString(1, userLogin);
+            statement.setString(2, req.getParameter("art_number"));
+
+            statement.registerOutParameter(3, Types.VARCHAR);
+
+            statement.executeQuery();
+
+            final String artistStatus = (String) statement.getObject(3);
+
+            if ("ok".equals(artistStatus)) {
+                getServletContext().getRequestDispatcher("/ceremony_info").forward(req, resp);
+            } else {
+                req.setAttribute("problem", artistStatus);
+                getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
         }
     }
 
