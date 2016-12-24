@@ -9,6 +9,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.*;
 
+import static ua.kpi.course.util.ConnectionProperties.*;
+
 @WebServlet(urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
@@ -18,11 +20,9 @@ public class LoginServlet extends HttpServlet {
         switch (command) {
             case "login":
                 try {
-                    Class.forName("oracle.jdbc.OracleDriver");
+                    Class.forName(DRIVER);
 
-                    try (Connection connection =
-                                 DriverManager.getConnection("jdbc:oracle:thin:@//localhost:1521/orcl", "vitaly", "q")) {
-
+                    try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD)) {
                         CallableStatement statement = connection.prepareCall("{call authorizeuser(?, ?, ?, ?)}");
                         String login = req.getParameter("user_login");
                         String password = req.getParameter("user_password");
