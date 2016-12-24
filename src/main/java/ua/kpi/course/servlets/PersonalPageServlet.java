@@ -20,45 +20,10 @@ public class PersonalPageServlet extends HttpServlet {
 
         switch (command) {
             case "load":
-                doLoad(req, resp);
+                doPersonalInfoLoad(req, resp);
                 break;
             case "update":
-                try {
-                    Class.forName(DRIVER);
-
-                    try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD)) {
-                        CallableStatement statement = connection.prepareCall(
-                                "{call UPDATEPERSONALPAGE(?,?,?,?,?,?,?,?,?,?)}");
-                        statement.setString(1, req.getParameter("user_name"));
-                        statement.setString(2, req.getParameter("user_password"));
-                        statement.setString(3, req.getParameter("user_groom_name"));
-                        statement.setString(4, req.getParameter("user_groom_surname"));
-                        statement.setString(5, req.getParameter("user_groom_birthday"));
-                        statement.setString(6, req.getParameter("user_bride_name"));
-                        statement.setString(7, req.getParameter("user_bride_surname"));
-                        statement.setString(8, req.getParameter("user_bride_birthday"));
-                        statement.setString(9, null);
-
-                        statement.registerOutParameter(10, Types.VARCHAR);
-
-                        statement.executeQuery();
-
-                        final String updateStatus = (String) statement.getObject(10);
-
-                        if ("ok".equalsIgnoreCase(updateStatus)) {
-                            doLoad(req, resp);
-                            statement.close();
-                        } else {
-                            statement.close();
-                            req.setAttribute("problem", updateStatus);
-                            getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                doPersonalInfoUpdate(req, resp);
                 break;
             default:
                 getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
@@ -66,7 +31,46 @@ public class PersonalPageServlet extends HttpServlet {
         }
     }
 
-    private void doLoad(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void doPersonalInfoUpdate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            Class.forName(DRIVER);
+
+            try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD)) {
+                CallableStatement statement = connection.prepareCall(
+                        "{call UPDATEPERSONALPAGE(?,?,?,?,?,?,?,?,?,?)}");
+                statement.setString(1, req.getParameter("user_name"));
+                statement.setString(2, req.getParameter("user_password"));
+                statement.setString(3, req.getParameter("user_groom_name"));
+                statement.setString(4, req.getParameter("user_groom_surname"));
+                statement.setString(5, req.getParameter("user_groom_birthday"));
+                statement.setString(6, req.getParameter("user_bride_name"));
+                statement.setString(7, req.getParameter("user_bride_surname"));
+                statement.setString(8, req.getParameter("user_bride_birthday"));
+                statement.setString(9, null);
+
+                statement.registerOutParameter(10, Types.VARCHAR);
+
+                statement.executeQuery();
+
+                final String updateStatus = (String) statement.getObject(10);
+
+                if ("ok".equalsIgnoreCase(updateStatus)) {
+                    doPersonalInfoLoad(req, resp);
+                    statement.close();
+                } else {
+                    statement.close();
+                    req.setAttribute("problem", updateStatus);
+                    getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doPersonalInfoLoad(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         final String userLogin = (String) session.getAttribute("user_login");
         try {

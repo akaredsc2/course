@@ -23,7 +23,7 @@
 </form>
 
 <form method="post" action="personal_page">
-
+    Personal information<br>
     <label>
         User name (login) :
         <input type="text" name="user_name" value="${requestScope.user_name}" readonly>
@@ -69,6 +69,22 @@
 
     <input name="command" type="hidden" value="update">
     <input type="submit" value="update personal data">
+</form>
+<form method="post" action="change_password">
+    Change password<br>
+    <label>
+        Old password :
+        <input type="password" name="old_password" required>
+    </label><br>
+    <label>
+        New password :
+        <input type="password" name="new_password" required>
+    </label><br>
+    <label>
+        Repeat new password :
+        <input type="password" name="new_password_2" required>
+    </label><br>
+    <input type="submit" value="change password">
 </form>
 </body>
 </html>
