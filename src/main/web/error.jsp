@@ -4,6 +4,7 @@
     <title>Error Page</title>
 </head>
 <body>
-Something went wrong. Sorry
+    Something went wrong. Sorry
+    Problem: ${requestScope.problem}
 </body>
 </html>

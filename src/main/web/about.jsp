@@ -8,7 +8,7 @@
 <header>
     <c:if test="${!empty sessionScope.user_login}">
         <form method="post" action="login">
-            Hello, ${user_login}!
+            Hello, ${sessionScope.user_login}!
             <input type="hidden" name="command" value="logout">
             <input type="submit" value="Logout"/>
         </form>
