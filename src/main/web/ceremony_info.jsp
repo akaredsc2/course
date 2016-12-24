@@ -23,10 +23,31 @@
             <input type="submit" value="personal page">
         </form>
     </header>
+    <form method="post" action="update_ceremony">
+        <label>
+            Ceremony date :
+            <input type="date" name="cer_date" value="${requestScope.cer_date}" required>
+            <input type="hidden" name="command" value="edit date">
+            <input type="submit" value="edit date">
+            <br>
+        </label>
+    </form>
+    Groom :         ${requestScope.cer_groom}<br>
+    Bride :         ${requestScope.cer_bride}<br>
+    <form method="post" action="update_ceremony">
+        <label>
+            Restaurant : ${requestScope.cer_rest}<br>
+            Other restaurant options :
+            <select name="rest_number" required>
+                <c:forEach items="${requestScope.restMap}" var="entry">
+                    <option value="${entry.key}">${entry.value}</option>
+                </c:forEach>
+            </select>
+            <input type="hidden" name="command" value="edit rest">
+            <input type="submit" value="edit restaurant">
+            <br>
+        </label>
+    </form>
 </c:if>
-Ceremony date : ${requestScope.cer_date}<br>
-Groom :         ${requestScope.cer_groom}<br>
-Bride :         ${requestScope.cer_bride}<br>
-Restaurant :    ${requestScope.cer_rest}<br>
 </body>
 </html>

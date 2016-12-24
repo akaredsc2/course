@@ -23,29 +23,29 @@
             <input type="submit" value="personal page">
         </form>
     </header>
-<form method="post" action="new_ceremony">
-    <label>
-        Ceremony date
-        <input type="date" name="cer_date" required> <br>
-    </label>
-    <label>
-        Restaurant
-        <select name="rest_number" required>
-            <c:forEach items="${requestScope.restMap}" var="entry">
-                <option value="${entry.key}">${entry.value}</option>
-            </c:forEach>
-        </select><br>
-    </label>
-    <label>
-        Artist
-        <select name="art_number" required>
-            <c:forEach items="${requestScope.artMap}" var="entry">
-                <option value="${entry.key}">${entry.value}</option>
-            </c:forEach>
-        </select><br>
-    </label>
-    <input type="submit" value="create new ceremony">
-</form>
+    <form method="post" action="new_ceremony">
+        <label>
+            Ceremony date
+            <input type="date" name="cer_date" required> <br>
+        </label>
+        <label>
+            Restaurant
+            <select name="rest_number" required>
+                <c:forEach items="${requestScope.restMap}" var="entry">
+                    <option value="${entry.key}">${entry.value}</option>
+                </c:forEach>
+            </select><br>
+        </label>
+        <label>
+            Artist
+            <select name="art_number" required>
+                <c:forEach items="${requestScope.artMap}" var="entry">
+                    <option value="${entry.key}">${entry.value}</option>
+                </c:forEach>
+            </select><br>
+        </label>
+        <input type="submit" value="create new ceremony">
+    </form>
 </c:if>
 </body>
 </html>

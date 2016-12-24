@@ -1,5 +1,7 @@
 package ua.kpi.course.servlets;
 
+import ua.kpi.course.util.UtilDao;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -48,6 +50,9 @@ public class CeremonyInfoServlet extends HttpServlet {
                     String restaurantInfo = set.getString(9) + ", " + set.getString(10) + "," + confirmationStatus;
                     req.setAttribute("cer_rest", restaurantInfo);
 
+                    UtilDao.retrieveRestaurants(req, connection);
+                    UtilDao.retrieveArtists(req, connection);
+
                     getServletContext().getRequestDispatcher("/ceremony_info.jsp").forward(req, resp);
                 } else {
                     req.setAttribute("problem", "failed to load ceremony");
@@ -60,4 +65,6 @@ public class CeremonyInfoServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
+
 }
