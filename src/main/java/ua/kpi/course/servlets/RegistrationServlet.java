@@ -12,7 +12,7 @@ import java.sql.*;
 
 import static ua.kpi.course.util.ConnectionProperties.*;
 
-@WebServlet(urlPatterns = {"/registration"})
+@WebServlet(name = "RegistrationServlet", urlPatterns = {"/registration"})
 public class RegistrationServlet extends HttpServlet {
 
     @Override

@@ -11,7 +11,7 @@ import java.sql.*;
 
 import static ua.kpi.course.util.ConnectionProperties.*;
 
-@WebServlet(urlPatterns = {"/login"})
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
     @Override
