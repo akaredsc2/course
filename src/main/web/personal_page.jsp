@@ -30,37 +30,41 @@
     </label> <br>
     <label>
         Email :
-        <input type="text" name="user_email" value="${requestScope.user_email}">
+        <input type="text" name="user_email" value="${requestScope.user_email}" readonly>
     </label> <br>
     <label>
         User status :
-        <input type="text" name="user_status" value="${requestScope.user_status}">
+        <input type="text" name="user_status" value="${requestScope.user_status}" readonly>
     </label> <br><br>
 
     <label>
         Groom name :
-        <input type="text" name="user_groom_name" value=" ${requestScope.user_groom_name}">
+        <input type="text" name="user_groom_name" value="${requestScope.user_groom_name}" required>
     </label> <br>
     <label>
         Groom surname :
-        <input type="text" name="user_groom_surname" value="${requestScope.user_groom_surname}">
+        <input type="text" name="user_groom_surname" value="${requestScope.user_groom_surname}" required>
     </label> <br>
     <label>
         Groom birthday :
-        <input type="date" name="user_groom_birthday" value="${requestScope.user_groom_birthday}">
+        <input type="date" name="user_groom_birthday" value="${requestScope.user_groom_birthday}" required>
     </label> <br><br>
 
     <label>
         Bride name :
-        <input type="text" name="user_bride_name" value="${requestScope.user_bride_name}">
+        <input type="text" name="user_bride_name" value="${requestScope.user_bride_name}" required>
     </label> <br>
     <label>
         Bride surname :
-        <input type="text" name="user_bride_surname" value="${requestScope.user_bride_surname}">
+        <input type="text" name="user_bride_surname" value="${requestScope.user_bride_surname}" required>
     </label> <br>
     <label>
         Bride birthday :
-        <input type="date" name="user_bride_birthday" value="${requestScope.user_bride_birthday}">
+        <input type="date" name="user_bride_birthday" value="${requestScope.user_bride_birthday}" required>
+    </label> <br><br>
+    <label>
+        Enter password to apply changes :
+        <input type="password" name="user_password" required>
     </label> <br>
 
     <input name="command" type="hidden" value="update">

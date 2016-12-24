@@ -157,7 +157,6 @@ CREATE OR REPLACE PROCEDURE UPDATEPERSONALPAGE (
   BRIDE_NAME IN VARCHAR2,
   BRIDE_SURNAME IN VARCHAR2,
   BRIDE_BIRTHDAY IN VARCHAR2, 
-  NEW_EMAIL IN VARCHAR2,
   NEW_PASSWORD IN VARCHAR2,
   STATUS OUT VARCHAR2  
 ) AS 
@@ -168,41 +167,27 @@ BEGIN
   SELECT COUNT(*) INTO correctUserCount FROM Users WHERE u_name = USER_NAME AND u_password = USER_PASSWORD;
   IF correctUserCount <> 0 THEN
     BEGIN
-      IF GROOM_NAME IS NOT NULL THEN
-        UPDATE Users SET u_groom_name = GROOM_NAME WHERE u_name = USER_NAME;
-      END IF;
-      IF GROOM_SURNAME IS NOT NULL THEN
-        UPDATE Users SET u_groom_surname = GROOM_SURNAME WHERE u_name = USER_NAME;
-      END IF;
-      IF GROOM_BIRTHDAY IS NOT NULL THEN
-        UPDATE Users SET u_groom_birthday = GROOM_BIRTHDAY WHERE u_name = USER_NAME;
-      END IF;
-      
-      IF BRIDE_NAME IS NOT NULL THEN
-        UPDATE Users SET u_bride_name = BRIDE_NAME WHERE u_name = USER_NAME;
-      END IF;
-      IF BRIDE_SURNAME IS NOT NULL THEN
-        UPDATE Users SET u_bride_surname = BRIDE_SURNAME WHERE u_name = USER_NAME;
-      END IF;
-      IF BRIDE_BIRTHDAY IS NOT NULL THEN
-        UPDATE Users SET u_bride_birthday = BRIDE_BIRTHDAY WHERE u_name = USER_NAME;
-      END IF;
-      
+      if (groom_name is not null and 
+        GROOM_SURNAME is not null and 
+        GROOM_BIRTHDAY is not null and 
+        BRIDE_NAME is not null and 
+        BRIDE_SURNAME is not null and 
+        BRIDE_BIRTHDAY is not null) then 
+        UPDATE Users SET 
+          u_groom_name = GROOM_NAME, 
+          u_groom_surname = GROOM_SURNAME, 
+          u_groom_birthday = to_date(GROOM_BIRTHDAY, 'yyyy-mm-dd'),
+          u_bride_name = BRIDE_NAME,
+          u_bride_surname = BRIDE_SURNAME,
+          u_bride_birthday = to_date(BRIDE_BIRTHDAY, 'yyyy-mm-dd')
+        WHERE u_name = USER_NAME;
+      end if;
       IF NEW_PASSWORD IS NOT NULL THEN
         UPDATE Users SET u_password = NEW_PASSWORD WHERE u_name = USER_NAME;
       END IF;
       
       STATUS := 'ok';
-    
-      IF NEW_EMAIL IS NOT NULL THEN
-        BEGIN
-          SELECT COUNT(*) INTO sameEmailCount FROM Users WHERE u_email = NEW_EMAIL;
-          IF sameEmailCount = 0 THEN
-            UPDATE Users SET u_email = NEW_EMAIL WHERE u_name = USER_NAME;
-          END IF;
-          STATUS := 'Failed to update email. Specified address is already occupied';
-        END;
-      END IF;
+
       COMMIT;
     END;
   ELSE
@@ -658,7 +643,7 @@ END UPDATEBILL;
 
 create view personalInfo as(
   select 
-    u_name, u_email, 
+    u_name, u_email, u_is_manager,
     u_groom_name, u_groom_surname, u_groom_birthday, 
     u_bride_name, u_bride_surname, u_bride_birthday
   from

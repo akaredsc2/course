@@ -1,7 +1,5 @@
 package ua.kpi.course.servlets;
 
-import ua.kpi.course.util.ConnectionProperties;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +19,7 @@ public class RestorationServlet extends HttpServlet {
         final String email = req.getParameter("user_email");
 
         try {
-            Class.forName(ConnectionProperties.DRIVER);
+            Class.forName(DRIVER);
 
             try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD)) {
                 CallableStatement statement = connection.prepareCall("{call RESTOREPASSWORD(?,?,?,?)}");
