@@ -16,45 +16,14 @@ public class NewCeremonyServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-    }
-/*
-    private void doDisplay(HttpServletRequest request) {
-        HttpSession session = request.getSession();
+        HttpSession session = req.getSession();
         final String userLogin = (String) session.getAttribute("user_login");
         try {
             Class.forName(DRIVER);
 
-            try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD)) {
-                PreparedStatement statement = connection.prepareStatement(
-                        "SELECT u_name,\n" +
-                                "    u_groom_name, u_groom_surname, u_groom_birthday,\n" +
-                                "    u_bride_name, u_bride_surname, u_bride_birthday,\n" +
-                                "    c_date,\n" +
-                                "    r_name, r_address, r_is_confirmed " +
-                                "FROM ceremonyrestaurant " +
-                                "WHERE u_name = '" + userLogin + "'");
-                statement.executeQuery();
-
-                ResultSet set = statement.getResultSet();
-
-                if (set.next() && set.getDate(8) != null) {
-                    String groomInfo = set.getString(2) + " " + set.getString(3) + ", " + set.getDate(4);
-                    request.setAttribute("cer_groom", groomInfo);
-
-                    String brideInfo = set.getString(5) + " " + set.getString(6) + ", " + set.getDate(7);
-                    request.setAttribute("cer_bride", brideInfo);
-
-                    Date ceremonyDate = set.getDate(8);
-                    request.setAttribute("cer_date", ceremonyDate);
-
-                    String confirmationStatus = set.getInt(11) > 0 ? "confirmed" : "not confirmed";
-                    String restaurantInfo = set.getString(9) + ", " + set.getString(10) + "," + confirmationStatus;
-                    request.setAttribute("cer_bride", restaurantInfo);
-
-                } else {
-
-                }
+            try (Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+                 CallableStatement statement = connection.prepareCall("{call CHANGECEREMONYDATE(?,?,?)}")) {
+                loadCeremonyDate(req, resp, userLogin, connection, statement);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -62,5 +31,64 @@ public class NewCeremonyServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-*/
+
+    private void loadCeremonyDate(HttpServletRequest req, HttpServletResponse resp, String userLogin, Connection connection, CallableStatement statement) throws SQLException, ServletException, IOException {
+        statement.setString(1, userLogin);
+        statement.setDate(2, Date.valueOf(req.getParameter("cer_date")));
+
+        statement.registerOutParameter(3, Types.VARCHAR);
+
+        statement.executeQuery();
+
+        final String ceremonyDateStatus = (String) statement.getObject(3);
+
+        if ("ok".equals(ceremonyDateStatus)) {
+            loadRestaurant(req, resp, userLogin, connection);
+        } else {
+            req.setAttribute("problem", ceremonyDateStatus);
+            getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
+        }
+    }
+
+    private void loadRestaurant(HttpServletRequest req, HttpServletResponse resp, String userLogin, Connection connection) throws SQLException, ServletException, IOException {
+        CallableStatement restaurantStatement = connection.prepareCall("{CALL CHANGERESTAURANT(?,?,?)}");
+        restaurantStatement.setString(1, userLogin);
+        restaurantStatement.setString(2, req.getParameter("rest_number"));
+
+        restaurantStatement.registerOutParameter(3, Types.VARCHAR);
+
+        restaurantStatement.executeQuery();
+
+        final String restaurantStatus = (String) restaurantStatement.getObject(3);
+
+        if ("ok".equals(restaurantStatus)) {
+            restaurantStatement.close();
+            loadArtist(req, resp, userLogin, connection);
+        } else {
+            restaurantStatement.close();
+            req.setAttribute("problem", restaurantStatus);
+            getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
+        }
+    }
+
+    private void loadArtist(HttpServletRequest req, HttpServletResponse resp, String userLogin, Connection connection) throws SQLException, ServletException, IOException {
+        CallableStatement artistStatement = connection.prepareCall("{CALL CHANGEARTIST(?,?,?)}");
+        artistStatement.setString(1, userLogin);
+        artistStatement.setString(2, req.getParameter("art_number"));
+
+        artistStatement.registerOutParameter(3, Types.VARCHAR);
+
+        artistStatement.executeQuery();
+
+        final String artistStatus = (String) artistStatement.getObject(3);
+
+        if ("ok".equals(artistStatus)) {
+            artistStatement.close();
+            getServletContext().getRequestDispatcher("/ceremony_info").forward(req, resp);
+        } else {
+            artistStatement.close();
+            req.setAttribute("problem", artistStatus);
+            getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
+        }
+    }
 }

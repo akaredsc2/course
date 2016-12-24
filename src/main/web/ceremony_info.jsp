@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>New ceremony</title>
+    <title>Ceremony</title>
 </head>
 <body>
 <c:if test="${!empty sessionScope.user_login}">
@@ -23,29 +23,10 @@
             <input type="submit" value="personal page">
         </form>
     </header>
-<form method="post" action="new_ceremony">
-    <label>
-        Ceremony date
-        <input type="date" name="cer_date" required> <br>
-    </label>
-    <label>
-        Restaurant
-        <select name="rest_number" required>
-            <c:forEach items="${requestScope.restMap}" var="entry">
-                <option value="${entry.key}">${entry.value}</option>
-            </c:forEach>
-        </select><br>
-    </label>
-    <label>
-        Artist
-        <select name="art_number" required>
-            <c:forEach items="${requestScope.artMap}" var="entry">
-                <option value="${entry.key}">${entry.value}</option>
-            </c:forEach>
-        </select><br>
-    </label>
-    <input type="submit" value="create new ceremony">
-</form>
 </c:if>
+Ceremony date : ${requestScope.cer_date}<br>
+Groom :         ${requestScope.cer_groom}<br>
+Bride :         ${requestScope.cer_bride}<br>
+Restaurant :    ${requestScope.cer_rest}<br>
 </body>
 </html>

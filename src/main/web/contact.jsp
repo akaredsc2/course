@@ -12,33 +12,39 @@
     </style>
 </head>
 <body>
-<header>
-    <c:if test="${!empty sessionScope.user_login}">
+<c:if test="${!empty sessionScope.user_login}">
+    <header>
         <form method="post" action="login">
-            Hello, ${user_login}!
+            Hello, ${sessionScope.user_login}!
             <input type="hidden" name="command" value="logout">
             <input type="submit" value="Logout"/>
         </form>
         <br/>
-    </c:if>
-    <a href="<c:url value="/ceremony.jsp"/>">Manage Ceremony</a>
-    <a href="<c:url value="/contact.jsp"/>">Contact Manager</a>
-    <a href="<c:url value="/about.jsp"/>">About</a>
-</header>
-<label>
-    Message History<br>
-    <textarea name="message_history" disabled>
+        <form method="post" action="ceremony_switch">
+            <input type="submit" value="manage ceremony">
+        </form>
+        <a href="<c:url value="/contact.jsp"/>">Contact Manager</a>
+        <a href="<c:url value="/about.jsp"/>">About</a>
+        <form method="post" action="personal_page">
+            <input name="command" type="hidden" value="load">
+            <input type="submit" value="personal page">
+        </form>
+    </header>
+    <label>
+        Message History<br>
+        <textarea name="message_history" disabled>
     [09:15 23-Nov-16] Manager: your GUI is garbage
     </textarea>
-</label>
-<form method="post" action="message">
-    <label>
-        New message<br>
-        <textarea name="user_new_message">
+    </label>
+    <form method="post" action="message">
+        <label>
+            New message<br>
+            <textarea name="user_new_message">
 
         </textarea><br>
-        <input type="submit" value="send">
-    </label>
-</form>
+            <input type="submit" value="send">
+        </label>
+    </form>
+</c:if>
 </body>
 </html>
