@@ -107,6 +107,23 @@
                     <input type="hidden" name="command" value="restaurant">
                     <input type="hidden" name="user_name" value="${item[0]}">
                     <input type="hidden" name="rest_number" value="${item[2]}">
+                    <input type="submit" value="apply status"><br>
+                </form>
+            </c:forEach>
+            <br>Artists assignments confirmation/rejection : <br>
+            <c:forEach items="${requestScope.art_tokens}" var="item">
+                <form method="post" action="confirm">
+                    User : ${item[0]}, Artist: ${item[1]},
+                    Current status : ${item[3]}, New status :
+                    <label>
+                        <select name="art_status" required>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                        </select>
+                    </label>
+                    <input type="hidden" name="command" value="artist">
+                    <input type="hidden" name="user_name" value="${item[0]}">
+                    <input type="hidden" name="art_number" value="${item[2]}">
                     <input type="submit" value="apply status">
                 </form>
             </c:forEach>
