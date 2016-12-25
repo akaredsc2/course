@@ -82,6 +82,17 @@
                     <input type="submit" value="promote to manager">
                 </label>
             </form>
+            <form method="post" action="assign">
+                <label>
+                    Unassigned users :
+                    <select name="assign_to" required>
+                        <c:forEach items="${requestScope.unassigned_user}" var="item">
+                            <option value="${item}">${item}</option>
+                        </c:forEach>
+                    </select>
+                    <input type="submit" value="promote to manager">
+                </label>
+            </form>
         </c:when>
     </c:choose>
 </c:if>

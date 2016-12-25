@@ -46,9 +46,11 @@ public class RegistrationServlet extends HttpServlet {
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
+                    getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+                getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
             }
         } else {
             req.setAttribute("problem", "password does not match");

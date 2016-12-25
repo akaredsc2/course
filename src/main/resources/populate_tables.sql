@@ -683,6 +683,34 @@ BEGIN
 END INSERTBILL;
 /
 
+CREATE OR REPLACE PROCEDURE ASSIGNTOUSER (
+  USER_NAME IN VARCHAR2, 
+  MANAGER_NAME IN VARCHAR2,
+  STATUS OUT VARCHAR2  
+) AS 
+userExists integer;
+managerExists integer;
+BEGIN
+  SET TRANSACTION ISOLATION LEVEL serializable;
+  select count (*) into userExists from users where u_name = user_name and u_is_manager = 0;
+  select count (*) into managerExists from users where u_name = manager_name and u_is_manager <> 0;
+  
+  if userExists > 0 then
+    if managerExists > 0 then
+      begin
+        update ceremonies set manager_fk = manager_name where u_name_fk = user_name;
+        status := 'ok';
+        commit;
+      end;
+    else
+      status := 'manager not found';
+    end if;
+  else
+    status := 'user not found';
+  end if;
+END ASSIGNTOUSER;
+/
+
 create view ceremonyrestaurant as(
   select 
     u_name,

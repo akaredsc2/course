@@ -59,18 +59,8 @@ public class CeremonyInfoServlet extends HttpServlet {
                         UtilDao.retrieveRestaurants(req, connection);
                         UtilDao.retrieveArtists(req, connection);
                     } else {
-                        Connection innerConnection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
-                        PreparedStatement preparedStatement = innerConnection.prepareStatement("SELECT u_name FROM userstatus WHERE u_is_manager = 0");
-                        preparedStatement.executeQuery();
-
-                        ResultSet resultSet = preparedStatement.getResultSet();
-                        List<String> userList = new ArrayList<>();
-                        while (resultSet.next()) {
-                            userList.add(resultSet.getString(1));
-                        }
-                        req.setAttribute("user_list", userList);
-                        preparedStatement.close();
-                        innerConnection.close();
+                        loadRegularUsers(req);
+                        loadUnassignedUsers(req);
                     }
                     getServletContext().getRequestDispatcher("/ceremony_info.jsp").forward(req, resp);
                 } else {
@@ -85,6 +75,38 @@ public class CeremonyInfoServlet extends HttpServlet {
             e.printStackTrace();
             getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
         }
+    }
+
+    private void loadRegularUsers(HttpServletRequest req) throws SQLException {
+        Connection innerConnection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+        PreparedStatement preparedStatement = innerConnection.prepareStatement("SELECT u_name FROM userstatus WHERE u_is_manager = 0");
+        preparedStatement.executeQuery();
+
+        ResultSet resultSet = preparedStatement.getResultSet();
+        List<String> userList = new ArrayList<>();
+        while (resultSet.next()) {
+            userList.add(resultSet.getString(1));
+        }
+        req.setAttribute("user_list", userList);
+        preparedStatement.close();
+        innerConnection.close();
+    }
+
+    private void loadUnassignedUsers(HttpServletRequest req) throws SQLException {
+        Connection innerConnection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+        PreparedStatement preparedStatement = innerConnection.prepareStatement("SELECT u_name " +
+                "FROM managerAssignments " +
+                "WHERE manager_fk is null and u_name in (select u_name from userstatus where u_is_manager = 0)");
+        preparedStatement.executeQuery();
+
+        ResultSet resultSet = preparedStatement.getResultSet();
+        List<String> userList = new ArrayList<>();
+        while (resultSet.next()) {
+            userList.add(resultSet.getString(1));
+        }
+        req.setAttribute("unassigned_user", userList);
+        preparedStatement.close();
+        innerConnection.close();
     }
 
     private void loadCeremonyArtists(HttpServletRequest req, String userLogin) throws ServletException, IOException {
