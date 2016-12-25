@@ -23,50 +23,67 @@
             <input type="submit" value="personal page">
         </form>
     </header>
-    <form method="post" action="update_ceremony">
-        <label>
-            Ceremony date :
-            <input type="date" name="cer_date" value="${requestScope.cer_date}" required>
-            <input type="hidden" name="command" value="edit date">
-            <input type="submit" value="edit date">
-            <br>
-        </label>
-    </form>
-    Groom :         ${requestScope.cer_groom}<br>
-    Bride :         ${requestScope.cer_bride}<br>
-    <form method="post" action="update_ceremony">
-        <label>
-            Restaurant : ${requestScope.cer_rest}<br>
-            Other restaurant options :
-            <select name="rest_number" required>
-                <c:forEach items="${requestScope.restMap}" var="entry">
-                    <option value="${entry.key}">${entry.value}</option>
-                </c:forEach>
-            </select>
-            <input type="hidden" name="command" value="edit rest">
-            <input type="submit" value="edit restaurant">
-            <br>
-        </label>
-    </form>
-    <form method="post" action="update_ceremony">
-        <label>
-            Artists : <br>
-            <c:forEach items="${requestScope.cer_art}" var="item">
-                ${item}<br>
-            </c:forEach>
-            Other artists :
-            <select name="art_number" required>
-                <c:forEach items="${requestScope.artMap}" var="entry">
-                    <option value="${entry.key}">${entry.value}</option>
-                </c:forEach>
-            </select>
-            <input type="hidden" name="command" value="add artist">
-            <input type="submit" value="add artist">
-        </label>
-    </form>
-    <form method="post" action="bill">
-        <input type="submit" value="checkout bill">
-    </form>
+    <c:choose>
+        <c:when test="${!sessionScope.user_is_manager}">
+            <form method="post" action="update_ceremony">
+                <label>
+                    Ceremony date :
+                    <input type="date" name="cer_date" value="${requestScope.cer_date}" required>
+                    <input type="hidden" name="command" value="edit date">
+                    <input type="submit" value="edit date">
+                    <br>
+                </label>
+            </form>
+            Groom :         ${requestScope.cer_groom}<br>
+            Bride :         ${requestScope.cer_bride}<br>
+            <form method="post" action="update_ceremony">
+                <label>
+                    Restaurant : ${requestScope.cer_rest}<br>
+                    Other restaurant options :
+                    <select name="rest_number" required>
+                        <c:forEach items="${requestScope.restMap}" var="entry">
+                            <option value="${entry.key}">${entry.value}</option>
+                        </c:forEach>
+                    </select>
+                    <input type="hidden" name="command" value="edit rest">
+                    <input type="submit" value="edit restaurant">
+                    <br>
+                </label>
+            </form>
+            <form method="post" action="update_ceremony">
+                <label>
+                    Artists : <br>
+                    <c:forEach items="${requestScope.cer_art}" var="item">
+                        ${item}<br>
+                    </c:forEach>
+                    Other artists :
+                    <select name="art_number" required>
+                        <c:forEach items="${requestScope.artMap}" var="entry">
+                            <option value="${entry.key}">${entry.value}</option>
+                        </c:forEach>
+                    </select>
+                    <input type="hidden" name="command" value="add artist">
+                    <input type="submit" value="add artist">
+                </label>
+            </form>
+            <form method="post" action="bill">
+                <input type="submit" value="checkout bill">
+            </form>
+        </c:when>
+        <c:when test="${sessionScope.user_is_manager}">
+            <form method="post" action="promotion">
+                <label>
+                    Users that don't have manager privileges :
+                    <select name="new_man" required>
+                        <c:forEach items="${requestScope.user_list}" var="item">
+                            <option value="${item}">${item}</option>
+                        </c:forEach>
+                    </select>
+                    <input type="submit" value="promote to manager">
+                </label>
+            </form>
+        </c:when>
+    </c:choose>
 </c:if>
 </body>
 </html>
