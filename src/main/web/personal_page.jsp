@@ -16,7 +16,9 @@
         <form method="post" action="ceremony_switch">
             <input type="submit" value="manage ceremony">
         </form>
-        <a href="<c:url value="/contact.jsp"/>">Contact Manager</a>
+        <form method="post" action="contact">
+            <input type="submit" value="contact manager">
+        </form>
         <a href="<c:url value="/about.jsp"/>">About</a>
         <form method="post" action="personal_page">
             <input name="command" type="hidden" value="load">

@@ -205,16 +205,10 @@ PROCEDURE SENDMESSAGE (
 ) AS 
 BEGIN
   SET TRANSACTION ISOLATION LEVEL serializable;
-  IF FROM_USER <> TO_USER THEN
-    BEGIN
-      INSERT INTO Messages(m_from_fk, m_to_fk, m_timestamp, m_content)
-      VALUES (FROM_USER, TO_USER, SYSTIMESTAMP, MESSAGE_CONTENT);
-      STATUS := 'ok';
-      COMMIT;
-    END;
-  ELSE 
-    STATUS := 'Sending messages to won account is now allowed';
-  END IF;
+  INSERT INTO Messages(m_from_fk, m_to_fk, m_timestamp, m_content)
+  VALUES (FROM_USER, TO_USER, SYSTIMESTAMP, MESSAGE_CONTENT);
+  STATUS := 'ok';
+  COMMIT;
 END SENDMESSAGE;
 /
 
@@ -785,3 +779,8 @@ create or replace view viewartists as (
 );
 /
 
+create view messageHistory as 
+select m_from_fk m_from, m_to_fk m_to, m_content, m_timestamp 
+from Messages
+order by m_timestamp desc;
+/
