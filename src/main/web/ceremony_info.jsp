@@ -143,7 +143,7 @@
                         Email : <input type="email" name="new_email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                     </label>
                     <label>
-                        Price per day : <input type="number" name="new_price" min="1" max="100000" step="0.1" required>
+                        Price per day : <input type="number" name="new_price" min="1" max="1000000000" step="0.01" required>
                     </label>
                     <input type="hidden" name="command" value="restaurant">
                     <input type="submit" value="add restaurant">
@@ -162,7 +162,7 @@
                         Email : <input type="email" name="new_email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                     </label>
                     <label>
-                        Price per day : <input type="number" name="new_price" min="1" max="100000" step="0.1" required>
+                        Price per day : <input type="number" name="new_price" min="1" max="1000000000" step="0.01" required>
                     </label>
                     <input type="hidden" name="command" value="artist">
                     <input type="submit" value="add artist">
