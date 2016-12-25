@@ -90,7 +90,45 @@
                             <option value="${item}">${item}</option>
                         </c:forEach>
                     </select>
-                    <input type="submit" value="promote to manager">
+                    <input type="submit" value="assign user">
+                </label>
+            </form>
+            <form method="post" action="create">
+                <label>
+                    New restaurant : <br>
+                    <label>
+                        Name : <input type="text" name="new_name" required>
+                    </label>
+                    <label>
+                        Address : <input type="text" name="new_other" required>
+                    </label>
+                    <label>
+                        Email : <input type="email" name="new_email" required>
+                    </label>
+                    <label>
+                        Price per day : <input type="number" name="new_price" min="1" max="100000" step="0.1" required>
+                    </label>
+                    <input type="hidden" name="command" value="restaurant">
+                    <input type="submit" value="add restaurant">
+                </label>
+            </form>
+            <form method="post" action="create">
+                <label>
+                    New artist : <br>
+                    <label>
+                        Name : <input type="text" name="new_name" required>
+                    </label>
+                    <label>
+                        Genre : <input type="text" name="new_other" required>
+                    </label>
+                    <label>
+                        Email : <input type="email" name="new_email" required>
+                    </label>
+                    <label>
+                        Price per day : <input type="number" name="new_price" min="1" max="100000" step="0.1" required>
+                    </label>
+                    <input type="hidden" name="command" value="artist">
+                    <input type="submit" value="add artist">
                 </label>
             </form>
         </c:when>

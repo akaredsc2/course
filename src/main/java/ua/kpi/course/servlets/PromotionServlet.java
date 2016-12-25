@@ -23,6 +23,8 @@ public class PromotionServlet extends HttpServlet {
                 String userName = req.getParameter("new_man");
                 String managerName = (String) req.getSession().getAttribute("user_login");
 
+                System.out.println(userName);
+                System.out.println(managerName);
                 statement.setString(1, userName);
                 statement.setString(2, managerName);
 
@@ -33,7 +35,8 @@ public class PromotionServlet extends HttpServlet {
                 String promotionStatus = (String) statement.getObject(3);
 
                 if ("ok".equalsIgnoreCase(promotionStatus)) {
-                    getServletContext().getRequestDispatcher("/ceremony_info").forward(req, resp);
+                    req.getSession().invalidate();
+                    getServletContext().getRequestDispatcher("/login").forward(req, resp);
                 } else {
                     req.setAttribute("problem", promotionStatus);
                     getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);

@@ -543,7 +543,7 @@ BEGIN
   SET TRANSACTION ISOLATION LEVEL serializable;
   select count(*) into isManager from users where u_name = manager_name and u_is_manager <> 0;
   
-  if isManager > 0 then
+  if isManager <> 0 then
     begin
       select count(*) into artistExists from artists where a_name = ARTIST_NAME;
       

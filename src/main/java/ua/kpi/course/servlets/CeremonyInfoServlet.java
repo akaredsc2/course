@@ -38,30 +38,29 @@ public class CeremonyInfoServlet extends HttpServlet {
 
                 ResultSet set = statement.getResultSet();
 
-                if (set.next()) {
-                    boolean isManager = (boolean) session.getAttribute("user_is_manager");
-                    if (!isManager) {
-                        String groomInfo = set.getString(2) + " " + set.getString(3) + ", " + set.getDate(4);
-                        req.setAttribute("cer_groom", groomInfo);
+                boolean isManager = (boolean) session.getAttribute("user_is_manager");
+                if (isManager) {
+                    loadRegularUsers(req);
+                    loadUnassignedUsers(req);
+                    getServletContext().getRequestDispatcher("/ceremony_info.jsp").forward(req, resp);
+                } else if (set.next()) {
+                    String groomInfo = set.getString(2) + " " + set.getString(3) + ", " + set.getDate(4);
+                    req.setAttribute("cer_groom", groomInfo);
 
-                        String brideInfo = set.getString(5) + " " + set.getString(6) + ", " + set.getDate(7);
-                        req.setAttribute("cer_bride", brideInfo);
+                    String brideInfo = set.getString(5) + " " + set.getString(6) + ", " + set.getDate(7);
+                    req.setAttribute("cer_bride", brideInfo);
 
-                        Date ceremonyDate = set.getDate(8);
-                        req.setAttribute("cer_date", ceremonyDate);
+                    Date ceremonyDate = set.getDate(8);
+                    req.setAttribute("cer_date", ceremonyDate);
 
-                        String confirmationStatus = set.getInt(11) > 0 ? "confirmed" : "not confirmed";
-                        String restaurantInfo = set.getString(9) + ", " + set.getString(10) + "," + confirmationStatus;
-                        req.setAttribute("cer_rest", restaurantInfo);
+                    String confirmationStatus = set.getInt(11) > 0 ? "confirmed" : "not confirmed";
+                    String restaurantInfo = set.getString(9) + ", " + set.getString(10) + "," + confirmationStatus;
+                    req.setAttribute("cer_rest", restaurantInfo);
 
-                        loadCeremonyArtists(req, userLogin);
+                    loadCeremonyArtists(req, userLogin);
 
-                        UtilDao.retrieveRestaurants(req, connection);
-                        UtilDao.retrieveArtists(req, connection);
-                    } else {
-                        loadRegularUsers(req);
-                        loadUnassignedUsers(req);
-                    }
+                    UtilDao.retrieveRestaurants(req, connection);
+                    UtilDao.retrieveArtists(req, connection);
                     getServletContext().getRequestDispatcher("/ceremony_info.jsp").forward(req, resp);
                 } else {
                     req.setAttribute("problem", "failed to load ceremony");
@@ -96,7 +95,7 @@ public class CeremonyInfoServlet extends HttpServlet {
         Connection innerConnection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
         PreparedStatement preparedStatement = innerConnection.prepareStatement("SELECT u_name " +
                 "FROM managerAssignments " +
-                "WHERE manager_fk is null and u_name in (select u_name from userstatus where u_is_manager = 0)");
+                "WHERE manager_fk IS NULL AND u_name IN (SELECT u_name FROM userstatus WHERE u_is_manager = 0)");
         preparedStatement.executeQuery();
 
         ResultSet resultSet = preparedStatement.getResultSet();
