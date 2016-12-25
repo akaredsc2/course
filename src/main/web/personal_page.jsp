@@ -44,32 +44,32 @@
 
                 <label>
                     Groom name :
-                    <input type="text" name="user_groom_name" value="${requestScope.user_groom_name}" required>
+                    <input type="text" name="user_groom_name" value="${requestScope.user_groom_name}" pattern="[a-zA-Z].{6,40}" required>
                 </label> <br>
                 <label>
                     Groom surname :
-                    <input type="text" name="user_groom_surname" value="${requestScope.user_groom_surname}" required>
+                    <input type="text" name="user_groom_surname" value="${requestScope.user_groom_surname}" pattern="[a-zA-Z].{6,40}" required>
                 </label> <br>
                 <label>
                     Groom birthday :
-                    <input type="date" name="user_groom_birthday" value="${requestScope.user_groom_birthday}" required>
+                    <input type="date" name="user_groom_birthday" value="${requestScope.user_groom_birthday}" pattern="[a-zA-Z].{6,40}" required>
                 </label> <br><br>
 
                 <label>
                     Bride name :
-                    <input type="text" name="user_bride_name" value="${requestScope.user_bride_name}" required>
+                    <input type="text" name="user_bride_name" value="${requestScope.user_bride_name}" pattern="[a-zA-Z].{6,40}" required>
                 </label> <br>
                 <label>
                     Bride surname :
-                    <input type="text" name="user_bride_surname" value="${requestScope.user_bride_surname}" required>
+                    <input type="text" name="user_bride_surname" value="${requestScope.user_bride_surname}" pattern="[a-zA-Z].{6,40}" required>
                 </label> <br>
                 <label>
                     Bride birthday :
-                    <input type="date" name="user_bride_birthday" value="${requestScope.user_bride_birthday}" required>
+                    <input type="date" name="user_bride_birthday" value="${requestScope.user_bride_birthday}" pattern="[a-zA-Z].{6,40}" required>
                 </label> <br><br>
                 <label>
                     Enter password to apply changes :
-                    <input type="password" name="user_password" required>
+                    <input type="password" name="user_password" required pattern="[a-zA-Z0-9].{6,40}">
                 </label> <br>
 
                 <input name="command" type="hidden" value="update">
@@ -79,15 +79,15 @@
                 Change password<br>
                 <label>
                     Old password :
-                    <input type="password" name="old_password" required>
+                    <input type="password" name="old_password" required pattern="[a-zA-Z0-9].{6,40}">
                 </label><br>
                 <label>
                     New password :
-                    <input type="password" name="new_password" required>
+                    <input type="password" name="new_password" required pattern="[a-zA-Z0-9].{6,40}">
                 </label><br>
                 <label>
                     Repeat new password :
-                    <input type="password" name="new_password_2" required>
+                    <input type="password" name="new_password_2" required pattern="[a-zA-Z0-9].{6,40}">
                 </label><br>
                 <input type="submit" value="change password">
             </form>
@@ -96,7 +96,7 @@
             <form method="post" action="promotion">
                 <label>
                     Enter password to apply changes :
-                    <input type="password" name="user_password" required>
+                    <input type="password" name="user_password" required pattern="[a-zA-Z0-9].{6,40}">
                 </label><br>
                 <input type="hidden" name="new_man" value="${sessionScope.user_login}">
                 <input type="submit" value="become regular user">

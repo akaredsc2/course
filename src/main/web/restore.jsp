@@ -7,13 +7,13 @@
 <body>
 <form method="post" action="restore">
     <label>
-        Login: <input type="text" name="user_login" required pattern=".{6,}"><br>
+        Login: <input type="text" name="user_login" required pattern="[a-zA-Z].{6,40}"><br>
     </label>
     <label hidden>
-        Password: <input type="password" name="user_password" pattern=".{6,}"><br>
+        Password: <input type="password" name="user_password" pattern="[a-zA-Z0-9].{6,40}"><br>
     </label>
     <label hidden>
-        Repeat password: <input type="password" name="user_password_2" pattern=".{6,}"><br>
+        Repeat password: <input type="password" name="user_password_2" pattern="[a-zA-Z0-9].{6,40}"><br>
     </label>
     <label>
         Email: <input type="email" name="user_email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"><br>

@@ -99,7 +99,6 @@ public class ContactServlet extends HttpServlet {
         }
     }
 
-
     private void loadRegularUsers(HttpServletRequest req) throws SQLException {
         Connection innerConnection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
         PreparedStatement preparedStatement = innerConnection.prepareStatement("SELECT u_name FROM userstatus");

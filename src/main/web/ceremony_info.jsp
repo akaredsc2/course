@@ -134,13 +134,13 @@
                 <label>
                     New restaurant : <br>
                     <label>
-                        Name : <input type="text" name="new_name" required>
+                        Name : <input type="text" name="new_name" required pattern="[a-zA-Z].{6,40}" >
                     </label>
                     <label>
-                        Address : <input type="text" name="new_other" required>
+                        Address : <input type="text" name="new_other" required pattern="[a-zA-Z].{6,256}">
                     </label>
                     <label>
-                        Email : <input type="email" name="new_email" required>
+                        Email : <input type="email" name="new_email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                     </label>
                     <label>
                         Price per day : <input type="number" name="new_price" min="1" max="100000" step="0.1" required>
@@ -153,13 +153,13 @@
                 <label>
                     New artist : <br>
                     <label>
-                        Name : <input type="text" name="new_name" required>
+                        Name : <input type="text" name="new_name" required pattern="[a-zA-Z].{6,40}" >
                     </label>
                     <label>
-                        Genre : <input type="text" name="new_other" required>
+                        Genre : <input type="text" name="new_other" required pattern="[a-zA-Z].{6,40}" >
                     </label>
                     <label>
-                        Email : <input type="email" name="new_email" required>
+                        Email : <input type="email" name="new_email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                     </label>
                     <label>
                         Price per day : <input type="number" name="new_price" min="1" max="100000" step="0.1" required>
