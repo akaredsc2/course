@@ -651,6 +651,38 @@ create view personalInfo as(
 );
 /
 
+CREATE OR REPLACE PROCEDURE INSERTBILL (
+  user_name IN VARCHAR2, 
+  amount IN number, 
+  status OUT VARCHAR2  
+) AS 
+userExists number;
+billNumber number;
+ceremonyNumber number;
+BEGIN
+  set transaction isolation level serializable;
+  select count(*) into userExists from users where u_name = user_name;
+  if userExists > 0 then
+    if amount > 0 then
+      begin
+        select max(b_number) into billNumber from bills;
+        billNumber := billNumber + 1;
+        select c_number into ceremonyNumber from ceremonies where u_name_fk = user_name;
+        
+        insert into Bills(b_number, c_number_fk, b_amount, b_timestamp, b_is_paid)
+        values (billNumber, ceremonyNumber, amount, systimestamp, 0);
+        status := 'ok';
+      commit;
+      end;
+    else
+      status := 'negative amount';
+    end if;
+  else 
+    status := 'user not found';
+  end if;
+END INSERTBILL;
+/
+
 create view ceremonyrestaurant as(
   select 
     u_name,

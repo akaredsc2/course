@@ -64,6 +64,9 @@
             <input type="submit" value="add artist">
         </label>
     </form>
+    <form method="post" action="bill">
+        <input type="submit" value="checkout bill">
+    </form>
 </c:if>
 </body>
 </html>

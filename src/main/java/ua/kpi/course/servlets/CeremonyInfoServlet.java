@@ -87,8 +87,6 @@ public class CeremonyInfoServlet extends HttpServlet {
                 artistList.add(artistInfo);
             }
 
-            System.out.println(artistList);
-
             req.setAttribute("cer_art", artistList);
         } catch (SQLException e) {
             e.printStackTrace();
