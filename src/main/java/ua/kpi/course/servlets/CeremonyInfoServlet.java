@@ -42,6 +42,7 @@ public class CeremonyInfoServlet extends HttpServlet {
                 if (isManager) {
                     loadRegularUsers(req);
                     loadUnassignedUsers(req);
+                    loadRestaurantsToConfirm(req);
                     getServletContext().getRequestDispatcher("/ceremony_info.jsp").forward(req, resp);
                 } else if (set.next()) {
                     String groomInfo = set.getString(2) + " " + set.getString(3) + ", " + set.getDate(4);
@@ -74,6 +75,31 @@ public class CeremonyInfoServlet extends HttpServlet {
             e.printStackTrace();
             getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
         }
+    }
+
+    private void loadRestaurantsToConfirm(HttpServletRequest req) throws SQLException {
+        Connection innerConnection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+        PreparedStatement preparedStatement = innerConnection.prepareStatement(
+                "SELECT ceremonyrestaurant.u_name, ceremonyrestaurant.r_name, r_contract, ceremonyrestaurant.r_is_confirmed " +
+                        "FROM ceremonyrestaurant INNER JOIN managerAssignments ON ceremonyrestaurant.u_name = managerAssignments.u_name " +
+                        "INNER JOIN viewrestaurants ON viewrestaurants.r_name = ceremonyrestaurant.r_name " +
+                        "WHERE managerAssignments.manager_fk = '" + req.getSession().getAttribute("user_login") + "'");
+        preparedStatement.executeQuery();
+
+        ResultSet resultSet = preparedStatement.getResultSet();
+        List<String[]> tokenList = new ArrayList<>();
+        while (resultSet.next()) {
+            String[] tokens = new String[4];
+            tokens[0] = resultSet.getString(1);
+            tokens[1] = resultSet.getString(2);
+            tokens[2] = resultSet.getString(3);
+            tokens[3] = resultSet.getString(4);
+            tokenList.add(tokens);
+        }
+        System.out.println(tokenList);
+        req.setAttribute("rest_tokens", tokenList);
+        preparedStatement.close();
+        innerConnection.close();
     }
 
     private void loadRegularUsers(HttpServletRequest req) throws SQLException {

@@ -93,6 +93,24 @@
                     <input type="submit" value="assign user">
                 </label>
             </form>
+            <br>Restaurant assignments confirmation/rejection : <br>
+            <c:forEach items="${requestScope.rest_tokens}" var="item">
+                <form method="post" action="confirm">
+                    User : ${item[0]}, Restaurant: ${item[1]},
+                    Current status : ${item[3]}, New status :
+                    <label>
+                        <select name="rest_status" required>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                        </select>
+                    </label>
+                    <input type="hidden" name="command" value="restaurant">
+                    <input type="hidden" name="user_name" value="${item[0]}">
+                    <input type="hidden" name="rest_number" value="${item[2]}">
+                    <input type="submit" value="apply status">
+                </form>
+            </c:forEach>
+
             <form method="post" action="create">
                 <label>
                     New restaurant : <br>

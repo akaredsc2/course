@@ -36,7 +36,7 @@ public class PromotionServlet extends HttpServlet {
 
                 if ("ok".equalsIgnoreCase(promotionStatus)) {
                     req.getSession().invalidate();
-                    getServletContext().getRequestDispatcher("/login").forward(req, resp);
+                    getServletContext().getRequestDispatcher("/login.jsp").forward(req, resp);
                 } else {
                     req.setAttribute("problem", promotionStatus);
                     getServletContext().getRequestDispatcher("/error.jsp").forward(req, resp);
